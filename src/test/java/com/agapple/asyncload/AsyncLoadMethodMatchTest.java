@@ -14,9 +14,9 @@ import org.springframework.util.ReflectionUtils;
 import com.agapple.asyncload.impl.AsyncLoadPerl5RegexpMethodMatcher;
 
 /**
- * methodMatch∆•≈‰≤‚ ‘
+ * methodMatchÂåπÈÖçÊµãËØï
  * 
- * @author jianghang 2011-1-29 œ¬ŒÁ05:06:25
+ * @author jianghang 2011-1-29 ‰∏ãÂçà05:06:25
  */
 public class AsyncLoadMethodMatchTest extends BaseAsyncLoadTest {
 
@@ -30,13 +30,13 @@ public class AsyncLoadMethodMatchTest extends BaseAsyncLoadTest {
         AsyncLoadPerl5RegexpMethodMatcher matcher = new AsyncLoadPerl5RegexpMethodMatcher();
         matcher.setPatterns(new String[] { METHOD1, METHOD2 });
 
-        Method method1 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD1);
+        Method method1 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD1);
         Assert.assertTrue(matcher.matches(method1));
-        Method method2 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD2);
+        Method method2 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD2);
         Assert.assertTrue(matcher.matches(method2));
-        Method method3 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD3);
+        Method method3 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD3);
         Assert.assertFalse(matcher.matches(method3));
-        Method method4 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD4);
+        Method method4 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD4);
         Assert.assertFalse(matcher.matches(method4));
     }
 
@@ -44,15 +44,15 @@ public class AsyncLoadMethodMatchTest extends BaseAsyncLoadTest {
     public void testMatch_exclude() {
         AsyncLoadPerl5RegexpMethodMatcher matcher = new AsyncLoadPerl5RegexpMethodMatcher();
         matcher.setPatterns(new String[] { METHOD1, METHOD2 });
-        matcher.setExcludedPatterns(new String[] { METHOD2, METHOD4 }); //  π”√≈≈≥˝±ÿ–Îª˘”⁄patternª˘¥°…œ
+        matcher.setExcludedPatterns(new String[] { METHOD2, METHOD4 }); // ‰ΩøÁî®ÊéíÈô§ÂøÖÈ°ªÂü∫‰∫épatternÂü∫Á°Ä‰∏ä
 
-        Method method1 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD1);
+        Method method1 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD1);
         Assert.assertTrue(matcher.matches(method1));
-        Method method2 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD2);
+        Method method2 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD2);
         Assert.assertFalse(matcher.matches(method2));
-        Method method3 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD3);
+        Method method3 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD3);
         Assert.assertFalse(matcher.matches(method3));
-        Method method4 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD4);
+        Method method4 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD4);
         Assert.assertFalse(matcher.matches(method4));
     }
 
@@ -62,19 +62,19 @@ public class AsyncLoadMethodMatchTest extends BaseAsyncLoadTest {
         matcher.setExcludedPatterns(new String[] { METHOD3, METHOD4 });
         matcher.setExcludeOveride(true);
 
-        Method method1 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD1);
+        Method method1 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD1);
         Assert.assertTrue(matcher.matches(method1));
-        Method method2 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD2);
+        Method method2 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD2);
         Assert.assertTrue(matcher.matches(method2));
-        Method method3 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD3);
+        Method method3 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD3);
         Assert.assertFalse(matcher.matches(method3));
-        Method method4 = ReflectionUtils.findMethod(MethodMatchTest.class, METHOD4);
+        Method method4 = ReflectionUtils.findMethod(MethodMatchMock.class, METHOD4);
         Assert.assertFalse(matcher.matches(method4));
     }
 
 }
 
-class MethodMatchTest {
+class MethodMatchMock {
 
     public void method1() {
 

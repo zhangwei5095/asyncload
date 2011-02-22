@@ -15,9 +15,9 @@ import com.agapple.asyncload.AsyncLoadProxy;
 import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
 
 /**
- * »ùÓÚspring FactoryBeanÊµÏÖµÄÒ»Ì×AsyncLoad»úÖÆ£¬ÉùÃ÷Ê½
+ * åŸºäºspring FactoryBeanå®ç°çš„ä¸€å¥—AsyncLoadæœºåˆ¶ï¼Œå£°æ˜å¼
  * 
- * @author jianghang 2011-1-24 ÏÂÎç07:00:17
+ * @author jianghang 2011-1-24 ä¸‹åˆ07:00:17
  */
 public class AsyncLoadFactoryBean implements FactoryBean, InitializingBean {
 
@@ -27,7 +27,7 @@ public class AsyncLoadFactoryBean implements FactoryBean, InitializingBean {
 
     public Object getObject() throws Exception {
         AsyncLoadProxy proxy = new AsyncLoadEnhanceProxy(target, config, executor);
-        return proxy.getProxy(); // ·µ»Ø¶ÔÓ¦µÄ´úÀí¶ÔÏó
+        return proxy.getProxy(); // è¿”å›å¯¹åº”çš„ä»£ç†å¯¹è±¡
     }
 
     public Class getObjectType() {
@@ -35,7 +35,7 @@ public class AsyncLoadFactoryBean implements FactoryBean, InitializingBean {
     }
 
     public boolean isSingleton() {
-        return true; // ÒòÎªÊ¹ÓÃproxy£¬ËùÒÔÉèÖÃÎªtrue
+        return true; // å› ä¸ºä½¿ç”¨proxyï¼Œæ‰€ä»¥è®¾ç½®ä¸ºtrue
     }
 
     public void afterPropertiesSet() throws Exception {

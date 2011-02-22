@@ -6,9 +6,9 @@
 package com.agapple.asyncload;
 
 /**
- * 异步加载proxy工厂
+ * 寮傛鍔犺浇proxy宸ュ巶
  * 
- * @author jianghang 2011-1-21 下午08:26:32
+ * @author jianghang 2011-1-21 涓嬪崍08:26:32
  */
 public interface AsyncLoadProxy<T> {
 

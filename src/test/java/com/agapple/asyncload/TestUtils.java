@@ -11,14 +11,14 @@ import java.lang.reflect.Method;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Ìá¹©³£¼ûµÄ²âÊÔ·½·¨
+ * æä¾›å¸¸è§çš„æµ‹è¯•æ–¹æ³•
  * 
- * @author jianghang 2011-1-30 ÉÏÎç11:15:54
+ * @author jianghang 2011-1-30 ä¸Šåˆ11:15:54
  */
 public class TestUtils {
 
     /**
-     * »ñÈ¡¶ÔÓ¦ÊôĞÔµÄÖµ
+     * è·å–å¯¹åº”å±æ€§çš„å€¼
      * 
      * @param obj
      * @param fieldName
@@ -31,7 +31,7 @@ public class TestUtils {
     }
 
     /**
-     * ÉèÖÃ¶ÔÓ¦²ÎÊıµÄÖµ
+     * è®¾ç½®å¯¹åº”å‚æ•°çš„å€¼
      * 
      * @param target
      * @param methodName
@@ -40,14 +40,14 @@ public class TestUtils {
      * @throws Exception
      */
     public static void setField(Object target, String fieldName, Object args) throws Exception {
-        // ²éÕÒ¶ÔÓ¦µÄ·½·¨
+        // æŸ¥æ‰¾å¯¹åº”çš„æ–¹æ³•
         Field field = ReflectionUtils.findField(target.getClass(), fieldName);
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, target, args);
     }
 
     /**
-     * µ÷ÓÃ·½·¨£¬¿ÉÒÔÊÇÒ»Ğ©Ë½ÓĞ·½·¨
+     * è°ƒç”¨æ–¹æ³•ï¼Œå¯ä»¥æ˜¯ä¸€äº›ç§æœ‰æ–¹æ³•
      * 
      * @param target
      * @param methodName
@@ -57,7 +57,7 @@ public class TestUtils {
      */
     public static Object invokeMethod(Object target, String methodName, Object... args) throws Exception {
         Method method = null;
-        // ²éÕÒ¶ÔÓ¦µÄ·½·¨
+        // æŸ¥æ‰¾å¯¹åº”çš„æ–¹æ³•
         if (args == null || args.length == 0) {
             method = ReflectionUtils.findMethod(target.getClass(), methodName);
         } else {

@@ -12,9 +12,9 @@ import net.sf.cglib.core.CodeGenerationException;
 import net.sf.cglib.proxy.Callback;
 
 /**
- * ¿½±´ÁËcglib enhancerµÄ²¿·Ö´úÂë,ÎªÁË½â¾öÄÜ¹»cache¶ÔÓ¦µÄproxyClassÎÊÌâ,ºóĞø¿É¸ù¾İ¶ÔÓ¦µÄclass¶¯Ì¬´´½¨¶ÔÏó
+ * æ‹·è´äº†cglib enhancerçš„éƒ¨åˆ†ä»£ç ,ä¸ºäº†è§£å†³èƒ½å¤Ÿcacheå¯¹åº”çš„proxyClassé—®é¢˜,åç»­å¯æ ¹æ®å¯¹åº”çš„classåŠ¨æ€åˆ›å»ºå¯¹è±¡
  * 
- * @author jianghang 2011-1-24 ÏÂÎç05:05:26
+ * @author jianghang 2011-1-24 ä¸‹åˆ05:05:26
  */
 public class EnhancerHelper {
 

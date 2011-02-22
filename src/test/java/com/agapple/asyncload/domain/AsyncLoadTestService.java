@@ -3,9 +3,9 @@ package com.agapple.asyncload.domain;
 import java.util.List;
 
 /**
- * Ò»¸öasyncLoadµÄ²âÊÔ¶ÔÏó·şÎñ
+ * ä¸€ä¸ªasyncLoadçš„æµ‹è¯•å¯¹è±¡æœåŠ¡
  * 
- * @author jianghang 2011-1-21 ÏÂÎç10:45:19
+ * @author jianghang 2011-1-21 ä¸‹åˆ10:45:19
  */
 public interface AsyncLoadTestService {
 

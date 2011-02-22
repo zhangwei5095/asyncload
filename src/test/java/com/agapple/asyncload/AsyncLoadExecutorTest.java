@@ -13,9 +13,9 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 /**
- * Õë¶ÔexecutorµÄµ¥Ôª²âÊÔ
+ * é’ˆå¯¹executorçš„å•å…ƒæµ‹è¯•
  * 
- * @author jianghang 2011-1-24 ÏÂÎç09:17:02
+ * @author jianghang 2011-1-24 ä¸‹åˆ09:17:02
  */
 public class AsyncLoadExecutorTest extends BaseAsyncLoadTest {
 
@@ -24,28 +24,28 @@ public class AsyncLoadExecutorTest extends BaseAsyncLoadTest {
     @Test
     public void testLifeCycle() {
         AsyncLoadExecutor executor = new AsyncLoadExecutor();
-        // Æô¶¯
+        // å¯åŠ¨
         executor.initital();
-        // ¹Ø±Õ
+        // å…³é—­
         executor.destory();
     }
 
     @Test
     public void testPoolConfig() {
         ThreadPoolExecutor executor = null;
-        // ´´½¨³õÊ¼²ÎÊı
+        // åˆ›å»ºåˆå§‹å‚æ•°
         AsyncLoadExecutor def = new AsyncLoadExecutor();
         def.initital();
 
         executor = (ThreadPoolExecutor) TestUtils.getField(def, POOL_NAME);
-        // ¼ì²épool size
+        // æ£€æŸ¥pool size
         Assert.assertEquals(executor.getCorePoolSize(), AsyncLoadExecutor.DEFAULT_POOL_SIZE);
-        // ¼ì²éhandler´¦ÀíÄ£Ê½
+        // æ£€æŸ¥handlerå¤„ç†æ¨¡å¼
         boolean result1 = executor.getRejectedExecutionHandler().getClass().isAssignableFrom(
                                                                                              ThreadPoolExecutor.AbortPolicy.class);
 
         Assert.assertTrue(result1);
-        // ¼ì²éblock queue
+        // æ£€æŸ¥block queue
         boolean result2 = executor.getQueue().getClass().isAssignableFrom(ArrayBlockingQueue.class);
         Assert.assertTrue(result2);
     }

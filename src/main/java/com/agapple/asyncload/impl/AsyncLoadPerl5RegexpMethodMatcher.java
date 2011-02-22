@@ -13,20 +13,20 @@ import org.springframework.util.Assert;
 import com.agapple.asyncload.AsyncLoadMethodMatch;
 
 /**
- * »ùÓÚPerl5 oro½øĞĞÕıÔòÆ¥ÅäµÄmatcher
+ * åŸºäºPerl5 oroè¿›è¡Œæ­£åˆ™åŒ¹é…çš„matcher
  * 
- * @author jianghang 2011-1-21 ÏÂÎç10:40:44
+ * @author jianghang 2011-1-21 ä¸‹åˆ10:40:44
  */
 public class AsyncLoadPerl5RegexpMethodMatcher implements AsyncLoadMethodMatch {
 
-    // Æ¥Åä×Ö·û´®
+    // åŒ¹é…å­—ç¬¦ä¸²
     private String[]       patterns                  = new String[0];
     private String[]       excludedPatterns          = new String[0];
-    // Æ¥Åä¶ÔÏó
+    // åŒ¹é…å¯¹è±¡
     private Pattern[]      compiledPatterns          = new Pattern[0];
     private Pattern[]      compiledExclusionPatterns = new Pattern[0];
-    private boolean        excludeOveride            = false;             // ÊÇ·ñÅÅ³ıÌõ¼şÓÅÏÈ
-    private PatternMatcher matcher                   = new Perl5Matcher(); // ¶ÔÓ¦µÄMatcher
+    private boolean        excludeOveride            = false;             // æ˜¯å¦æ’é™¤æ¡ä»¶ä¼˜å…ˆ
+    private PatternMatcher matcher                   = new Perl5Matcher(); // å¯¹åº”çš„Matcher
 
     public boolean matches(Method method) {
         String signatureString = method.getName();
@@ -38,16 +38,16 @@ public class AsyncLoadPerl5RegexpMethodMatcher implements AsyncLoadMethodMatch {
     }
 
     /**
-     * ÓÅÏÈ²ÉÈ¡pattern
+     * ä¼˜å…ˆé‡‡å–pattern
      * 
      * @param signatureString
      * @return
      */
     private boolean matchesFirst(String signatureString) {
-        // ÓÅÏÈ²ÉÈ¡pattern
+        // ä¼˜å…ˆé‡‡å–pattern
         for (int i = 0; i < this.compiledPatterns.length; i++) {
             boolean matched = this.matcher.matches(signatureString, this.compiledPatterns[i]);
-            if (matched) {// Èç¹ûÆ¥Åä£¬ÔÙ½øĞĞexcludePattern¹ıÂË
+            if (matched) {// å¦‚æœåŒ¹é…ï¼Œå†è¿›è¡ŒexcludePatternè¿‡æ»¤
                 for (int j = 0; j < this.compiledExclusionPatterns.length; j++) {
                     boolean excluded = this.matcher.matches(signatureString, this.compiledExclusionPatterns[j]);
                     if (excluded) {
@@ -62,13 +62,13 @@ public class AsyncLoadPerl5RegexpMethodMatcher implements AsyncLoadMethodMatch {
     }
 
     /**
-     * ÓÅÏÈ²ÉÈ¡excludePattern
+     * ä¼˜å…ˆé‡‡å–excludePattern
      * 
      * @param signatureString
      * @return
      */
     private boolean matchesExclusionFirst(String signatureString) {
-        // ÓÅÏÈ²ÉÈ¡excludePattern
+        // ä¼˜å…ˆé‡‡å–excludePattern
         boolean excluded = false;
         for (int i = 0; i < this.compiledExclusionPatterns.length; i++) {
             excluded |= this.matcher.matches(signatureString, this.compiledExclusionPatterns[i]);
@@ -78,7 +78,7 @@ public class AsyncLoadPerl5RegexpMethodMatcher implements AsyncLoadMethodMatch {
     }
 
     /**
-     * ±àÒë¶ÔÓ¦µÄpattern£¬·µ»ØoroµÄPattern¶ÔÏó
+     * ç¼–è¯‘å¯¹åº”çš„patternï¼Œè¿”å›oroçš„Patternå¯¹è±¡
      */
     private Pattern[] compilePatterns(String[] source) {
         Perl5Compiler compiler = new Perl5Compiler();

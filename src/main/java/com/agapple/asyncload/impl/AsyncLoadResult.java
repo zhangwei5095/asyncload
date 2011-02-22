@@ -9,9 +9,9 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.LazyLoader;
 
 /**
- * 异步加载返回的proxy result
+ * 寮傛鍔犺浇杩斿洖鐨刾roxy result
  * 
- * @author jianghang 2011-1-21 下午09:45:14
+ * @author jianghang 2011-1-21 涓嬪崍09:45:14
  */
 public class AsyncLoadResult {
 
@@ -27,7 +27,7 @@ public class AsyncLoadResult {
 
     public Object getProxy() {
         Class proxyClass = AsyncLoadProxyRepository.getProxy(returnClass.getCanonicalName());
-        if (proxyClass == null) { // 进行cache处理
+        if (proxyClass == null) { // 杩涜cache澶勭悊
             Enhancer enhancer = new Enhancer();
             enhancer.setSuperclass(returnClass);
             enhancer.setCallbackType(AsyncLoadFutureInterceptor.class);
@@ -38,7 +38,7 @@ public class AsyncLoadResult {
 
         EnhancerHelper.setThreadCallbacks(proxyClass, new Callback[] { new AsyncLoadFutureInterceptor() });
         try {
-            // 返回对象
+            // 杩斿洖瀵硅薄
             return ReflectUtils.newInstance(proxyClass);
         } finally {
             // clear thread callbacks to allow them to be gc'd
@@ -50,7 +50,7 @@ public class AsyncLoadResult {
     class AsyncLoadFutureInterceptor implements LazyLoader {
 
         public Object loadObject() throws Exception {
-            // 使用cglib lazyLoader，避免每次调用future
+            // 浣跨敤cglib lazyLoader锛岄伩鍏嶆瘡娆¤皟鐢╢uture
             return future.get(timeout, TimeUnit.MILLISECONDS);
         }
 

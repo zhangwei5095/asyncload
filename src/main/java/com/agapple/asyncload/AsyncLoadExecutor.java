@@ -11,9 +11,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Òì²½¼ÓÔØµÄ¾ßÌåÖ´ĞĞÈÎÎñÕß, Ö§³ÖRunableºÍCallableÁ½ÖÖ
+ * å¼‚æ­¥åŠ è½½çš„å…·ä½“æ‰§è¡Œä»»åŠ¡è€…, æ”¯æŒRunableå’ŒCallableä¸¤ç§
  * 
- * @author jianghang 2011-1-21 ÏÂÎç11:32:31
+ * @author jianghang 2011-1-21 ä¸‹åˆ11:32:31
  */
 public class AsyncLoadExecutor {
 
@@ -21,8 +21,8 @@ public class AsyncLoadExecutor {
     public static final int        DEFAULT_ACCEPT_COUNT = 100;
     public static final HandleMode DEFAULT_MODE         = HandleMode.REJECT;
     private int                    poolSize;
-    private int                    acceptCount;                            // µÈ´ı¶ÓÁĞ³¤¶È£¬±ÜÃâÎŞÏŞÖÆÌá½»ÇëÇó
-    private HandleMode             mode;                                   // Ä¬ÈÏÎª¾Ü¾ø·şÎñ£¬ÓÃÓÚ¿ØÖÆaccept¶ÓÁĞÂúÁËÒÔºóµÄ´¦Àí·½Ê½
+    private int                    acceptCount;                            // ç­‰å¾…é˜Ÿåˆ—é•¿åº¦ï¼Œé¿å…æ— é™åˆ¶æäº¤è¯·æ±‚
+    private HandleMode             mode;                                   // é»˜è®¤ä¸ºæ‹’ç»æœåŠ¡ï¼Œç”¨äºæ§åˆ¶accepté˜Ÿåˆ—æ»¡äº†ä»¥åçš„å¤„ç†æ–¹å¼
     private ThreadPoolExecutor     pool;
     private volatile boolean       isInit               = false;
 
@@ -52,7 +52,7 @@ public class AsyncLoadExecutor {
         if (isInit == false) {
             RejectedExecutionHandler handler = getHandler(mode);
             BlockingQueue queue = getBlockingQueue(acceptCount, mode);
-            // ¹¹Ôìpool³Ø
+            // æ„é€ poolæ± 
             this.pool = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue, handler);
 
             isInit = true;

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="GB2312"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-autowire="byName">
+	<bean id="asyncLoadTestServiceDAO" class="com.agapple.asyncload.domain.AsyncLoadTestServiceDAO" />
+	
+	<bean id="asyncLoadTestService" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" />
+	
+	<!-- async相关配置 -->
+	<bean id="asyncLoadExecutor" class="com.agapple.asyncload.AsyncLoadExecutor" init-method="initital" destroy-method="destory">
+		<property name="poolSize" value="10" />
+		<property name="acceptCount" value="100" />
+		<property name="mode" value="REJECT" />
+	</bean>
+	<bean id="asyncLoadMethodMatch" class="com.agapple.asyncload.impl.AsyncLoadPerl5RegexpMethodMatcher" >
+		<property name="patterns">
+			<list>
+				<value>(.*)RemoteModel(.*)</value>
+			</list>
+		</property>
+		<property name="excludedPatterns">
+			<list>
+				<value>(.*)listRemoteModel(.*)</value>
+			</list>
+		</property>
+		<property name="excludeOveride" value="false" />
+	</bean>
+	<bean id="asyncLoadConfig" class="com.agapple.asyncload.AsyncLoadConfig">
+		<property name="defaultTimeout" value="3000" />
+		<property name="matches">
+			<map>
+				<entry key-ref="asyncLoadMethodMatch" value="2000" />
+			</map>
+		</property>
+	</bean>
+	<!-- 异步加载模FactoryBean -->
+	<bean id="asyncLoadTestFactoryBean" class="com.agapple.asyncload.impl.spring.AsyncLoadFactoryBean">
+		<property name="target">
+			<ref bean="asyncLoadTestService" />
+		</property>
+		<property name="executor" ref="asyncLoadExecutor" />
+		<property name="config" ref="asyncLoadConfig" />
+	</bean>
+	<!-- 异步加载模板类 -->
+	<bean id="asyncLoadTemplate" class="com.agapple.asyncload.impl.template.AsyncLoadTemplate" >
+		<property name="executor" ref="asyncLoadExecutor" />
+		<property name="defaultTimeout" value="3000" />
+	</bean>
+</beans>

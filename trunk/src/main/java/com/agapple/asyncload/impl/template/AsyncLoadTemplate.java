@@ -18,17 +18,17 @@ import com.agapple.asyncload.AsyncLoadExecutor;
 import com.agapple.asyncload.impl.AsyncLoadResult;
 
 /**
- * »ùÓÚtemplateÄ£Ê½Ìá¹©µÄÒ»Ì×AsyncLoad»úÖÆ£¬±à³ÌÊ½
+ * åŸºäºtemplateæ¨¡å¼æä¾›çš„ä¸€å¥—AsyncLoadæœºåˆ¶ï¼Œç¼–ç¨‹å¼
  * 
- * @author jianghang 2011-1-24 ÏÂÎç07:01:07
+ * @author jianghang 2011-1-24 ä¸‹åˆ07:01:07
  */
 public class AsyncLoadTemplate {
 
     private AsyncLoadExecutor executor;
-    private Long              defaultTimeout = AsyncLoadConfig.DEFAULT_TIME_OUT; // 3Ãë
+    private Long              defaultTimeout = AsyncLoadConfig.DEFAULT_TIME_OUT; // 3ç§’
 
     /**
-     * Òì²½Ö´ĞĞcallbackÄ£°å,ÉèÖÃÄ¬ÈÏµÄ³¬Ê±Ê±¼ä£¬Í¬Ê±·µ»Ø¶ÔÓ¦µÄproxy model,Ö´ĞĞAsyncLoad
+     * å¼‚æ­¥æ‰§è¡Œcallbackæ¨¡æ¿,è®¾ç½®é»˜è®¤çš„è¶…æ—¶æ—¶é—´ï¼ŒåŒæ—¶è¿”å›å¯¹åº”çš„proxy model,æ‰§è¡ŒAsyncLoad
      * 
      * @param <R>
      * @param callback
@@ -39,7 +39,7 @@ public class AsyncLoadTemplate {
     }
 
     /**
-     * Òì²½Ö´ĞĞcallbackÄ£°å,Í¬Ê±·µ»Ø¶ÔÓ¦µÄproxy model,Ö´ĞĞAsyncLoad
+     * å¼‚æ­¥æ‰§è¡Œcallbackæ¨¡æ¿,åŒæ—¶è¿”å›å¯¹åº”çš„proxy model,æ‰§è¡ŒAsyncLoad
      * 
      * @param <R>
      * @param callback
@@ -58,24 +58,24 @@ public class AsyncLoadTemplate {
 
         Type type = callback.getClass().getGenericInterfaces()[0];
         if (!(type instanceof ParameterizedType)) {
-            // ÓÃ»§²»Ö¸¶¨AsyncLoadCallBackµÄ·ºĞÍĞÅÏ¢
-            // TODO: ¿ÉÒÔ¿¼ÂÇ£¬Èç¹û²»Ö¸¶¨·µ»Ø¶ÔÏó,Ä¬ÈÏ²»×ölazyLoad
+            // ç”¨æˆ·ä¸æŒ‡å®šAsyncLoadCallBackçš„æ³›å‹ä¿¡æ¯
+            // TODO: å¯ä»¥è€ƒè™‘ï¼Œå¦‚æœä¸æŒ‡å®šè¿”å›å¯¹è±¡,é»˜è®¤ä¸åšlazyLoad
             throw new RuntimeException(
                                        "you should specify AsyncLoadCallBack<R> for R type, ie: AsyncLoadCallBack<OfferModel>");
         }
         Class returnClass = (Class) getGenericClass((ParameterizedType) type, 0);
-        // ¹»ÔìÒ»¸ö·µ»ØµÄAsyncLoadResult
+        // å¤Ÿé€ ä¸€ä¸ªè¿”å›çš„AsyncLoadResult
         AsyncLoadResult result = new AsyncLoadResult(returnClass, future, timeout);
-        // ¼ÌĞø·µ»ØÒ»¸ö´úÀí¶ÔÏó
+        // ç»§ç»­è¿”å›ä¸€ä¸ªä»£ç†å¯¹è±¡
         return (R) result.getProxy();
     }
 
     /**
-     * Òì²½Ö´ĞĞcallbackÄ£°å,ÉèÖÃÄ¬ÈÏµÄ³¬Ê±Ê±¼ä£¬Í¬Ê±·µ»Ø¶ÔÓ¦µÄproxy model,Ö´ĞĞAsyncLoad
+     * å¼‚æ­¥æ‰§è¡Œcallbackæ¨¡æ¿,è®¾ç½®é»˜è®¤çš„è¶…æ—¶æ—¶é—´ï¼ŒåŒæ—¶è¿”å›å¯¹åº”çš„proxy model,æ‰§è¡ŒAsyncLoad
      * 
      * @param <R>
      * @param callback
-     * @param returnClass ÆÚÍûµÄ·µ»Ø¶ÔÏóclass
+     * @param returnClass æœŸæœ›çš„è¿”å›å¯¹è±¡class
      * @return
      */
     public <R> R execute(AsyncLoadCallback<R> callback, Class<?> returnClass) {
@@ -83,11 +83,11 @@ public class AsyncLoadTemplate {
     }
 
     /**
-     * Òì²½Ö´ĞĞcallbackÄ£°å,Í¬Ê±·µ»Ø¶ÔÓ¦µÄproxy model,Ö´ĞĞAsyncLoad
+     * å¼‚æ­¥æ‰§è¡Œcallbackæ¨¡æ¿,åŒæ—¶è¿”å›å¯¹åº”çš„proxy model,æ‰§è¡ŒAsyncLoad
      * 
      * @param <R>
      * @param callback
-     * @param returnClass ÆÚÍûµÄ·µ»Ø¶ÔÏóclass
+     * @param returnClass æœŸæœ›çš„è¿”å›å¯¹è±¡class
      * @param timeout
      * @return
      */
@@ -100,14 +100,14 @@ public class AsyncLoadTemplate {
                 return callback.doAsyncLoad();
             }
         });
-        // ¹»ÔìÒ»¸ö·µ»ØµÄAsyncLoadResult
+        // å¤Ÿé€ ä¸€ä¸ªè¿”å›çš„AsyncLoadResult
         AsyncLoadResult result = new AsyncLoadResult(returnClass, future, timeout);
-        // ¼ÌĞø·µ»ØÒ»¸ö´úÀí¶ÔÏó
+        // ç»§ç»­è¿”å›ä¸€ä¸ªä»£ç†å¯¹è±¡
         return (R) result.getProxy();
     }
 
     /**
-     * È¡µÃ·¶ĞÔĞÅÏ¢
+     * å–å¾—èŒƒæ€§ä¿¡æ¯
      * 
      * @param cls
      * @param i
@@ -115,9 +115,9 @@ public class AsyncLoadTemplate {
      */
     private Class<?> getGenericClass(ParameterizedType parameterizedType, int i) {
         Object genericClass = parameterizedType.getActualTypeArguments()[i];
-        if (genericClass instanceof ParameterizedType) { // ´¦Àí¶à¼¶·ºĞÍ
+        if (genericClass instanceof ParameterizedType) { // å¤„ç†å¤šçº§æ³›å‹
             return (Class<?>) ((ParameterizedType) genericClass).getRawType();
-        } else if (genericClass instanceof GenericArrayType) { // ´¦ÀíÊı×é·ºĞÍ
+        } else if (genericClass instanceof GenericArrayType) { // å¤„ç†æ•°ç»„æ³›å‹
             return (Class<?>) ((GenericArrayType) genericClass).getGenericComponentType();
         } else {
             return (Class<?>) genericClass;

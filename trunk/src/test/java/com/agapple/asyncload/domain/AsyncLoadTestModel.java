@@ -3,9 +3,9 @@ package com.agapple.asyncload.domain;
 import java.io.Serializable;
 
 /**
- * 一个asyncLoad的测试对象model，返回的对象
+ * 涓�涓猘syncLoad鐨勬祴璇曞璞odel锛岃繑鍥炵殑瀵硅薄
  * 
- * @author jianghang 2011-1-21 下午10:45:41
+ * @author jianghang 2011-1-21 涓嬪崍10:45:41
  */
 public class AsyncLoadTestModel implements Serializable {
 

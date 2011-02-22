@@ -6,9 +6,9 @@
 package com.agapple.asyncload.impl.template;
 
 /**
- * ¶ÔÓ¦AyncLoadÄ£°åµÄ»Øµ÷º¯Êı
+ * å¯¹åº”AyncLoadæ¨¡æ¿çš„å›è°ƒå‡½æ•°
  * 
- * @author jianghang 2011-1-24 ÏÂÎç07:38:10
+ * @author jianghang 2011-1-24 ä¸‹åˆ07:38:10
  */
 public interface AsyncLoadCallback<R> {
 

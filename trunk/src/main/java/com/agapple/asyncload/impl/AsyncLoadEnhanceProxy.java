@@ -29,9 +29,9 @@ import com.agapple.asyncload.AsyncLoadMethodMatch;
 import com.agapple.asyncload.AsyncLoadProxy;
 
 /**
- * »ùÓÚcglib enhance proxyµÄÊµÏÖ
+ * åŸºäºcglib enhance proxyçš„å®ç°
  * 
- * @author jianghang 2011-1-21 ÏÂÎç10:56:39
+ * @author jianghang 2011-1-21 ä¸‹åˆ10:56:39
  */
 public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
 
@@ -58,14 +58,14 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
     }
 
     /**
-     * ÏàÓ¦µÄ¼ì²é·½·¨
+     * ç›¸åº”çš„æ£€æŸ¥æ–¹æ³•
      */
     private void validate() {
         Assert.notNull(service, "service should not be null");
         Assert.notNull(config, "config should not be null");
         Assert.notNull(executor, "executor should not be null");
 
-        if (Modifier.isFinal(service.getClass().getModifiers())) { // Ä¿Ç°Ôİ²»Ö§³ÖfinalÀàĞÍµÄ´¦Àí£¬ÒÔºó¿ÉÒÔ¿¼ÂÇÊ¹ÓÃjdk proxy
+        if (Modifier.isFinal(service.getClass().getModifiers())) { // ç›®å‰æš‚ä¸æ”¯æŒfinalç±»å‹çš„å¤„ç†ï¼Œä»¥åå¯ä»¥è€ƒè™‘ä½¿ç”¨jdk proxy
             throw new IllegalArgumentException("Enhance proxy not support final class :" + service.getClass());
         }
     }
@@ -73,7 +73,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
     class AsyncLoadCallbackFilter implements CallbackFilter {
 
         public int accept(Method method) {
-            // Ô¤ÏÈ½øĞĞÆ¥Åä£¬Ö±½Ó¼ÆËãºÃĞèÒª´¦ÀíµÄmethod£¬±ÜÃâ¶¯Ì¬Æ¥ÅäÀË·ÑĞÔÄÜ
+            // é¢„å…ˆè¿›è¡ŒåŒ¹é…ï¼Œç›´æ¥è®¡ç®—å¥½éœ€è¦å¤„ç†çš„methodï¼Œé¿å…åŠ¨æ€åŒ¹é…æµªè´¹æ€§èƒ½
             Map<AsyncLoadMethodMatch, Long> matches = config.getMatches();
             Set<AsyncLoadMethodMatch> methodMatchs = matches.keySet();
             if (methodMatchs != null && !methodMatchs.isEmpty()) {
@@ -105,36 +105,36 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
             final Method finMethod = method;
 
             Class returnClass = method.getReturnType();
-            if (Void.TYPE.isAssignableFrom(returnClass)) {// ÅĞ¶Ï·µ»ØÖµÊÇ·ñÎªvoid
-                // ²»´¦ÀívoidµÄº¯Êıµ÷ÓÃ
+            if (Void.TYPE.isAssignableFrom(returnClass)) {// åˆ¤æ–­è¿”å›å€¼æ˜¯å¦ä¸ºvoid
+                // ä¸å¤„ç†voidçš„å‡½æ•°è°ƒç”¨
                 return finMethod.invoke(finObj, finArgs);
             } else if (Modifier.isFinal(returnClass.getModifiers())) {
-                // ´¦ÀíÌØÊâµÄfinalÀàĞÍ£¬Ä¿Ç°Ôİ²»Ö§³Ö£¬ºóĞø¿É²ÉÓÃjdk proxy
+                // å¤„ç†ç‰¹æ®Šçš„finalç±»å‹ï¼Œç›®å‰æš‚ä¸æ”¯æŒï¼Œåç»­å¯é‡‡ç”¨jdk proxy
                 return finMethod.invoke(finObj, finArgs);
             } else if (returnClass.isPrimitive() || returnClass.isArray()) {
-                // ²»´¦ÀíÌØÊâÀàĞÍ£¬ÒòÎªÎŞ·¨Ê¹ÓÃcglib´úÀí
+                // ä¸å¤„ç†ç‰¹æ®Šç±»å‹ï¼Œå› ä¸ºæ— æ³•ä½¿ç”¨cglibä»£ç†
                 return finMethod.invoke(finObj, finArgs);
             } else {
                 Future future = executor.submit(new Callable() {
 
                     public Object call() throws Exception {
                         try {
-                            return finMethod.invoke(finObj, finArgs);// ĞèÒªÖ±½ÓÎ¯ÍĞ¶ÔÓ¦µÄfinObj(service)½øĞĞ´¦Àí
+                            return finMethod.invoke(finObj, finArgs);// éœ€è¦ç›´æ¥å§”æ‰˜å¯¹åº”çš„finObj(service)è¿›è¡Œå¤„ç†
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                     }
                 });
-                // ¹»ÔìÒ»¸ö·µ»ØµÄAsyncLoadResult
+                // å¤Ÿé€ ä¸€ä¸ªè¿”å›çš„AsyncLoadResult
                 AsyncLoadResult result = new AsyncLoadResult(returnClass, future, timeout);
-                // ¼ÌĞø·µ»ØÒ»¸ö´úÀí¶ÔÏó
+                // ç»§ç»­è¿”å›ä¸€ä¸ªä»£ç†å¯¹è±¡
                 return result.getProxy();
             }
 
         }
 
         /**
-         * ·µ»Ø¶ÔÓ¦µÄÆ¥ÅäµÄtimeoutÊ±¼ä£¬Ò»¶¨ÄÜÕÒµ½¶ÔÓ¦µÄÆ¥Åäµã
+         * è¿”å›å¯¹åº”çš„åŒ¹é…çš„timeoutæ—¶é—´ï¼Œä¸€å®šèƒ½æ‰¾åˆ°å¯¹åº”çš„åŒ¹é…ç‚¹
          * 
          * @param method
          * @return
@@ -158,7 +158,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
     // =========================== help mehotd =================================
 
     /**
-     * ÓÅÏÈ´ÓRepository½øĞĞ»ñÈ¡ProxyClass,´´½¨¶ÔÓ¦µÄobject
+     * ä¼˜å…ˆä»Repositoryè¿›è¡Œè·å–ProxyClass,åˆ›å»ºå¯¹åº”çš„object
      * 
      * @return
      */
@@ -170,7 +170,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
             enhancer.setCallbackTypes(new Class[] { AsyncLoadDirect.class, AsyncLoadInterceptor.class });
             enhancer.setCallbackFilter(new AsyncLoadCallbackFilter());
             proxyClass = enhancer.createClass();
-            // ×¢²áproxyClass
+            // æ³¨å†ŒproxyClass
             AsyncLoadProxyRepository.registerProxy(service.getClass().getCanonicalName(), proxyClass);
         }
 

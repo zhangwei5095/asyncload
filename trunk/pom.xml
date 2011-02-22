@@ -17,40 +17,63 @@
     <!-- compiler settings properties -->
     <java_source_version>1.6</java_source_version>
     <java_target_version>1.6</java_target_version>
+    <file_encoding>UTF-8</file_encoding>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.alibaba.external</groupId>
-      <artifactId>sourceforge.spring</artifactId>
-      <version>2.5.6</version>
-    </dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring</artifactId>
+		<version>2.5.6</version>
+	</dependency>
     <dependency>
-      <groupId>com.alibaba.external</groupId>
-      <artifactId>sourceforge.cglib</artifactId>
-      <version>nodep-2.1_3</version>
-    </dependency>
+		<groupId>cglib</groupId>
+		<artifactId>cglib-nodep</artifactId>
+		<version>2.2</version>
+	</dependency>
     <dependency>
-      <groupId>com.alibaba.external</groupId>
-      <artifactId>jakarta.oro</artifactId>
-      <version>2.0.8</version>
-    </dependency>
+		<groupId>oro</groupId>
+		<artifactId>oro</artifactId>
+		<version>2.0.8</version>
+	</dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.5</version>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.alibaba.external</groupId>
-      <artifactId>sourceforge.spring.modules.test</artifactId>
-      <version>2.5.6</version>
-      <scope>test</scope>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-test</artifactId>
+		<version>2.5.6</version>
+		<scope>test</scope>
 	</dependency>
   </dependencies>
   
   <build>
 	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>${java_source_version}</source>
+				<target>${java_target_version}</target>
+				<encoding>${file_encoding}</encoding>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.5</version>
+			<configuration>
+			  <includes>
+				<include>**/*Test.java</include>
+			  </includes>
+			  <excludes>
+				<exclude>**/Base*Test.java</exclude>
+			  </excludes>
+			</configuration>
+		</plugin>
 	</plugins>
 	<sourceDirectory>src/main/java</sourceDirectory>  
 	<testSourceDirectory>src/test/java</testSourceDirectory>

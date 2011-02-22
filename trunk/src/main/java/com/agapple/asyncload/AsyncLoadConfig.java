@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ¶ÔÓ¦Òì²½¼ÓÔØ¹¤¾ßµÄ¹Ø×¢µã
+ * å¯¹åº”å¼‚æ­¥åŠ è½½å·¥å…·çš„å…³æ³¨ç‚¹
  * 
- * @author jianghang 2011-1-22 ÉÏÎç12:06:48
+ * @author jianghang 2011-1-22 ä¸Šåˆ12:06:48
  */
 public class AsyncLoadConfig {
 
     public static final Long                DEFAULT_TIME_OUT = 3 * 1000L;
-    private Long                            defaultTimeout   = DEFAULT_TIME_OUT; // µ¥Î»ms
+    private Long                            defaultTimeout   = DEFAULT_TIME_OUT; // å•ä½ms
     private Map<AsyncLoadMethodMatch, Long> matches;
 
     public AsyncLoadConfig(){
@@ -26,7 +26,7 @@ public class AsyncLoadConfig {
     public Map<AsyncLoadMethodMatch, Long> getMatches() {
         if (matches == null) {
             matches = new HashMap<AsyncLoadMethodMatch, Long>();
-            matches.put(AsyncLoadMethodMatch.TRUE, defaultTimeout); // Ä¬ÈÏÖµÎª3Ãë
+            matches.put(AsyncLoadMethodMatch.TRUE, defaultTimeout); // é»˜è®¤å€¼ä¸º3ç§’
         }
 
         return matches;

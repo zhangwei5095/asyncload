@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ò»¸ö²âÊÔAsyncLoadµÄÄ¬ÈÏÊµÏÖ
+ * ä¸€ä¸ªæµ‹è¯•AsyncLoadçš„é»˜è®¤å®ç°
  * 
- * @author jianghang 2011-1-21 ÏÂÎç10:46:19
+ * @author jianghang 2011-1-21 ä¸‹åˆ10:46:19
  */
 public class AsyncLoadTestServiceImpl implements AsyncLoadTestService {
 

@@ -8,13 +8,13 @@ package com.agapple.asyncload;
 import java.lang.reflect.Method;
 
 /**
- * Òì²½¼ÓÔØ»úÖÆ ·½·¨Æ¥Åä¶ÔÏó¶¨Òå
+ * å¼‚æ­¥åŠ è½½æœºåˆ¶ æ–¹æ³•åŒ¹é…å¯¹è±¡å®šä¹‰
  * 
- * @author jianghang 2011-1-21 ÏÂÎç09:49:29
+ * @author jianghang 2011-1-21 ä¸‹åˆ09:49:29
  */
 public interface AsyncLoadMethodMatch {
 
-    AsyncLoadMethodMatch TRUE = new AsyncLoadTrueMethodMatcher(); // Ä¬ÈÏÌá¹©·µ»Øalways trueµÄÊµÏÖ
+    AsyncLoadMethodMatch TRUE = new AsyncLoadTrueMethodMatcher(); // é»˜è®¤æä¾›è¿”å›always trueçš„å®ç°
 
     boolean matches(Method method);
 

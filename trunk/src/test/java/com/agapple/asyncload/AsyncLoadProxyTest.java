@@ -24,7 +24,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
 
     @Before
     public void init() {
-        // Çå¿ÕrepositoryÄÚµÄcache¼ÇÂ¼
+        // æ¸…ç©ºrepositoryå†…çš„cacheè®°å½•
         try {
             TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
         } catch (Exception e) {
@@ -35,86 +35,86 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
     @Test
     public void testProxy() {
         // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/home/ljh/cglib");
-        // ³õÊ¼»¯config
+        // åˆå§‹åŒ–config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
-        // ³õÊ¼»¯executor
+        // åˆå§‹åŒ–executor
         AsyncLoadExecutor executor = new AsyncLoadExecutor(10, 100);
         executor.initital();
-        // ³õÊ¼»¯proxy
+        // åˆå§‹åŒ–proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
         proxy.setService(asyncLoadTestService);
         proxy.setConfig(config);
         proxy.setExecutor(executor);
-        // Ö´ĞĞ²âÊÔ
+        // æ‰§è¡Œæµ‹è¯•
         AsyncLoadTestService service = proxy.getProxy();
-        AsyncLoadTestModel model1 = service.getRemoteModel("first", 1000); // Ã¿¸öÇëÇósleep 1000ms
-        AsyncLoadTestModel model2 = service.getRemoteModel("two", 1000); // Ã¿¸öÇëÇósleep 1000ms
-        AsyncLoadTestModel model3 = service.getRemoteModel("three", 1000); // Ã¿¸öÇëÇósleep 1000ms
+        AsyncLoadTestModel model1 = service.getRemoteModel("first", 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
+        AsyncLoadTestModel model2 = service.getRemoteModel("two", 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
+        AsyncLoadTestModel model3 = service.getRemoteModel("three", 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
 
         long start = 0, end = 0;
         start = System.currentTimeMillis();
         System.out.println(model1.getDetail());
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) > 500l); // µÚÒ»´Î»á×èÈû, ÏìÓ¦Ê±¼ä»áÔÚ1000ms×óÓÒ
+        Assert.assertTrue((end - start) > 500l); // ç¬¬ä¸€æ¬¡ä¼šé˜»å¡, å“åº”æ—¶é—´ä¼šåœ¨1000mså·¦å³
 
         start = System.currentTimeMillis();
         System.out.println(model2.getDetail());
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // µÚ¶ş´Î²»»á×èÈû£¬ÒòÎªµÚÒ»¸öÒÑ¾­×èÈûÁË1000ms
+        Assert.assertTrue((end - start) < 500l); // ç¬¬äºŒæ¬¡ä¸ä¼šé˜»å¡ï¼Œå› ä¸ºç¬¬ä¸€ä¸ªå·²ç»é˜»å¡äº†1000ms
 
         start = System.currentTimeMillis();
         System.out.println(model3.getDetail());
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // µÚÈı´Î²»»á×èÈû£¬ÒòÎªµÚÒ»¸öÒÑ¾­×èÈûÁË1000ms
+        Assert.assertTrue((end - start) < 500l); // ç¬¬ä¸‰æ¬¡ä¸ä¼šé˜»å¡ï¼Œå› ä¸ºç¬¬ä¸€ä¸ªå·²ç»é˜»å¡äº†1000ms
 
-        // Ïú»Ùexecutor
+        // é”€æ¯executor
         executor.destory();
     }
 
     public void testProxy_timeout() {
-        // ³õÊ¼»¯config
-        AsyncLoadConfig config = new AsyncLoadConfig(3 * 100l); // ÉèÖÃ³¬Ê±Ê±¼äÎª300ms
-        // ³õÊ¼»¯executor
+        // åˆå§‹åŒ–config
+        AsyncLoadConfig config = new AsyncLoadConfig(3 * 100l); // è®¾ç½®è¶…æ—¶æ—¶é—´ä¸º300ms
+        // åˆå§‹åŒ–executor
         AsyncLoadExecutor executor = new AsyncLoadExecutor(10, 100);
         executor.initital();
-        // ³õÊ¼»¯proxy
+        // åˆå§‹åŒ–proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
         proxy.setService(asyncLoadTestService);
         proxy.setConfig(config);
         proxy.setExecutor(executor);
 
         AsyncLoadTestService service = proxy.getProxy();
-        AsyncLoadTestModel model1 = service.getRemoteModel("first", 1000); // Ã¿¸öÇëÇósleep 1000ms
-        AsyncLoadTestModel model2 = service.getRemoteModel("two", 200); // Ã¿¸öÇëÇósleep 1000ms
+        AsyncLoadTestModel model1 = service.getRemoteModel("first", 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
+        AsyncLoadTestModel model2 = service.getRemoteModel("two", 200); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
 
         long start = 0, end = 0;
         start = System.currentTimeMillis();
         try {
             System.out.println(model1.getDetail());
-            Assert.fail(); // ²»»á×ßµ½ÕâÒ»²½
-        } catch (Exception e) { // TimeoutExceptionÒì³£
+            Assert.fail(); // ä¸ä¼šèµ°åˆ°è¿™ä¸€æ­¥
+        } catch (Exception e) { // TimeoutExceptionå¼‚å¸¸
             System.out.println(e);
         }
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // »á³¬Ê±
+        Assert.assertTrue((end - start) < 500l); // ä¼šè¶…æ—¶
 
         start = System.currentTimeMillis();
         try {
             System.out.println(model2.getDetail());
         } catch (Exception e) {
-            Assert.fail(); // ²»»á×ßµ½ÕâÒ»²½
+            Assert.fail(); // ä¸ä¼šèµ°åˆ°è¿™ä¸€æ­¥
         }
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // ²»»á³¬Ê±
+        Assert.assertTrue((end - start) < 500l); // ä¸ä¼šè¶…æ—¶
     }
 
     public void testProxy_block_reject() {
-        // ³õÊ¼»¯config
-        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // ÉèÖÃ³¬Ê±Ê±¼äÎª300ms
-        // ³õÊ¼»¯executor
-        AsyncLoadExecutor executor = new AsyncLoadExecutor(8, 2, AsyncLoadExecutor.HandleMode.REJECT); // ÉèÖÃÎª¾Ü¾ø,8¸ö¹¤×÷Ïß³Ì,2¸öµÈ´ı¶ÓÁĞ
+        // åˆå§‹åŒ–config
+        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // è®¾ç½®è¶…æ—¶æ—¶é—´ä¸º300ms
+        // åˆå§‹åŒ–executor
+        AsyncLoadExecutor executor = new AsyncLoadExecutor(8, 2, AsyncLoadExecutor.HandleMode.REJECT); // è®¾ç½®ä¸ºæ‹’ç»,8ä¸ªå·¥ä½œçº¿ç¨‹,2ä¸ªç­‰å¾…é˜Ÿåˆ—
         executor.initital();
-        // ³õÊ¼»¯proxy
+        // åˆå§‹åŒ–proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
         proxy.setService(asyncLoadTestService);
         proxy.setConfig(config);
@@ -125,8 +125,8 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         long start = 0, end = 0;
         start = System.currentTimeMillis();
         try {
-            for (int i = 0; i < 10; i++) { // ´´½¨10¸öÈÎÎñ
-                final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // Ã¿¸öÇëÇósleep 1000ms
+            for (int i = 0; i < 10; i++) { // åˆ›å»º10ä¸ªä»»åŠ¡
+                final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
                 executeService.submit(new Runnable() {
 
                     public void run() {
@@ -134,12 +134,12 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
                     }
                 });
             }
-        } catch (RejectedExecutionException e) { // ²»»á³öÏÖreject
+        } catch (RejectedExecutionException e) { // ä¸ä¼šå‡ºç°reject
             Assert.fail();
         }
 
         try {
-            final AsyncLoadTestModel model = service.getRemoteModel("first:" + 11, 1000); // ´´½¨µÚ11¸öÈÎÎñ£¬»á³öÏÖrejectÒì³£
+            final AsyncLoadTestModel model = service.getRemoteModel("first:" + 11, 1000); // åˆ›å»ºç¬¬11ä¸ªä»»åŠ¡ï¼Œä¼šå‡ºç°rejectå¼‚å¸¸
             executeService.submit(new Runnable() {
 
                 public void run() {
@@ -147,9 +147,9 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
                 }
             });
 
-            Assert.fail();// ²»»á×ßµ½ÕâÒ»²½
+            Assert.fail();// ä¸ä¼šèµ°åˆ°è¿™ä¸€æ­¥
         } catch (RejectedExecutionException e) {
-            System.out.println(e);// »á³öÏÖreject
+            System.out.println(e);// ä¼šå‡ºç°reject
         }
 
         try {
@@ -163,12 +163,12 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
     }
 
     public void testProxy_block_reject_noQueue() {
-        // ³õÊ¼»¯config
-        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // ÉèÖÃ³¬Ê±Ê±¼äÎª3000ms
-        // ³õÊ¼»¯executor
-        AsyncLoadExecutor executor = new AsyncLoadExecutor(2, 0, AsyncLoadExecutor.HandleMode.REJECT); // ÉèÖÃÎª¾Ü¾ø
+        // åˆå§‹åŒ–config
+        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // è®¾ç½®è¶…æ—¶æ—¶é—´ä¸º3000ms
+        // åˆå§‹åŒ–executor
+        AsyncLoadExecutor executor = new AsyncLoadExecutor(2, 0, AsyncLoadExecutor.HandleMode.REJECT); // è®¾ç½®ä¸ºæ‹’ç»
         executor.initital();
-        // ³õÊ¼»¯proxy
+        // åˆå§‹åŒ–proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
         proxy.setService(asyncLoadTestService);
         proxy.setConfig(config);
@@ -179,8 +179,8 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         long start = 0, end = 0;
         start = System.currentTimeMillis();
         try {
-            for (int i = 0; i < 5; i++) { // ´´½¨5¸öÈÎÎñ
-                final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // Ã¿¸öÇëÇósleep 1000ms
+            for (int i = 0; i < 5; i++) { // åˆ›å»º5ä¸ªä»»åŠ¡
+                final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
                 executeService.submit(new Runnable() {
 
                     public void run() {
@@ -189,9 +189,9 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
                 });
             }
 
-            Assert.fail(); // ²»»á×ßµ½ÕâÒ»²½
-        } catch (RejectedExecutionException e) { // »á³öÏÖreject
-            System.out.println(e);// »á³öÏÖreject
+            Assert.fail(); // ä¸ä¼šèµ°åˆ°è¿™ä¸€æ­¥
+        } catch (RejectedExecutionException e) { // ä¼šå‡ºç°reject
+            System.out.println(e);// ä¼šå‡ºç°reject
         }
 
         try {
@@ -205,12 +205,12 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
     }
 
     public void testProxy_block_discard() {
-        // ³õÊ¼»¯config
-        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // ÉèÖÃ³¬Ê±Ê±¼äÎª300ms
-        // ³õÊ¼»¯executor
-        AsyncLoadExecutor executor = new AsyncLoadExecutor(1, 0, AsyncLoadExecutor.HandleMode.BLOCK); // ÉèÖÃÎªºöÂÔ,10¸ö¹¤×÷Ïß³Ì,0¸öµÈ´ı¶ÓÁĞ
+        // åˆå§‹åŒ–config
+        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // è®¾ç½®è¶…æ—¶æ—¶é—´ä¸º300ms
+        // åˆå§‹åŒ–executor
+        AsyncLoadExecutor executor = new AsyncLoadExecutor(1, 0, AsyncLoadExecutor.HandleMode.BLOCK); // è®¾ç½®ä¸ºå¿½ç•¥,10ä¸ªå·¥ä½œçº¿ç¨‹,0ä¸ªç­‰å¾…é˜Ÿåˆ—
         executor.initital();
-        // ³õÊ¼»¯proxy
+        // åˆå§‹åŒ–proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
         proxy.setService(asyncLoadTestService);
         proxy.setConfig(config);
@@ -221,8 +221,8 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         long start = 0, end = 0;
         start = System.currentTimeMillis();
         try {
-            for (int i = 0; i < 20; i++) { // ´´½¨20¸öÈÎÎñ
-                final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // Ã¿¸öÇëÇósleep 1000ms
+            for (int i = 0; i < 20; i++) { // åˆ›å»º20ä¸ªä»»åŠ¡
+                final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // æ¯ä¸ªè¯·æ±‚sleep 1000ms
                 executeService.submit(new Runnable() {
 
                     public void run() {
@@ -232,7 +232,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
             }
 
             Thread.sleep(4000l);
-        } catch (RejectedExecutionException e) { // ²»»á³öÏÖreject
+        } catch (RejectedExecutionException e) { // ä¸ä¼šå‡ºç°reject
             Assert.fail();
         } catch (InterruptedException e) {
             Assert.fail();

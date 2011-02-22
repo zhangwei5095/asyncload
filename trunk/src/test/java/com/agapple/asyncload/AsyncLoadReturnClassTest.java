@@ -21,9 +21,9 @@ import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
 import com.agapple.asyncload.impl.AsyncLoadProxyRepository;
 
 /**
- * ²âÊÔ¶ÔÓ¦returnClass²»Í¬ÀàĞÍ
+ * æµ‹è¯•å¯¹åº”returnClassä¸åŒç±»å‹
  * 
- * @author jianghang 2011-2-9 ÏÂÎç11:06:35
+ * @author jianghang 2011-2-9 ä¸‹åˆ11:06:35
  */
 public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
 
@@ -33,24 +33,24 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
 
     @Before
     public void init() {
-        // Çå¿ÕrepositoryÄÚµÄcache¼ÇÂ¼
+        // æ¸…ç©ºrepositoryå†…çš„cacheè®°å½•
         try {
             TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
         } catch (Exception e) {
             Assert.fail();
         }
 
-        // ³õÊ¼»¯config
+        // åˆå§‹åŒ–config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
-        // ³õÊ¼»¯executor
+        // åˆå§‹åŒ–executor
         AsyncLoadExecutor executor = new AsyncLoadExecutor(10, 100);
         executor.initital();
-        // ³õÊ¼»¯proxy
+        // åˆå§‹åŒ–proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxyFactory = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
         proxyFactory.setService(asyncLoadTestService);
         proxyFactory.setConfig(config);
         proxyFactory.setExecutor(executor);
-        // Ö´ĞĞ²âÊÔ
+        // æ‰§è¡Œæµ‹è¯•
         proxy = proxyFactory.getProxy();
     }
 
@@ -60,8 +60,8 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         Object model = proxy.getRemoteModel("first", 1000);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // ²»»á×èÈû
-        // ¼ì²é¶ÔÓ¦µÄ·µ»Ø¶ÔÏómodelÎªAsyncLoadTestModelµÄ×ÓÀà
+        Assert.assertTrue((end - start) < 500l); // ä¸ä¼šé˜»å¡
+        // æ£€æŸ¥å¯¹åº”çš„è¿”å›å¯¹è±¡modelä¸ºAsyncLoadTestModelçš„å­ç±»
         Assert.assertTrue(model.getClass().getSuperclass() == AsyncLoadTestModel.class);
         System.out.println(model.getClass());
     }
@@ -72,7 +72,7 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         int model = proxy.countRemoteModel("first", 1000);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) > 500l); // ×èÈû
+        Assert.assertTrue((end - start) > 500l); // é˜»å¡
         System.out.println(model);
     }
 
@@ -82,7 +82,7 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         proxy.updateRemoteModel("first", 1000l);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) > 500l); // ×èÈû
+        Assert.assertTrue((end - start) > 500l); // é˜»å¡
     }
 
     @Test
@@ -91,8 +91,8 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         Object model = proxy.listRemoteModel("first", 1000l);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // ²»»á×èÈû
-        // ¼ì²é¶ÔÓ¦µÄ·µ»Ø¶ÔÏómodelÎªArrayList
+        Assert.assertTrue((end - start) < 500l); // ä¸ä¼šé˜»å¡
+        // æ£€æŸ¥å¯¹åº”çš„è¿”å›å¯¹è±¡modelä¸ºArrayList
         Assert.assertTrue(model.getClass().getInterfaces()[0] == List.class);
         System.out.println(model.getClass());
     }
@@ -103,8 +103,8 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         Object model = proxy.getRemoteName("first", 1000l);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) > 500l); // ×èÈû
-        // ¼ì²é¶ÔÓ¦µÄ·µ»Ø¶ÔÏómodelÎªArrayList
+        Assert.assertTrue((end - start) > 500l); // é˜»å¡
+        // æ£€æŸ¥å¯¹åº”çš„è¿”å›å¯¹è±¡modelä¸ºArrayList
         Assert.assertTrue(model.getClass() == String.class);
         System.out.println(model.getClass());
     }
@@ -115,9 +115,9 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         Object model = proxy.getRemoteObject("first", 1000l);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // ²»×èÈû
+        Assert.assertTrue((end - start) < 500l); // ä¸é˜»å¡
         System.out.println(model);
-        // ¼ì²é¶ÔÓ¦µÄ·µ»Ø¶ÔÏómodelÎªArrayList
+        // æ£€æŸ¥å¯¹åº”çš„è¿”å›å¯¹è±¡modelä¸ºArrayList
         Assert.assertTrue(model.getClass().getSuperclass() == Object.class);
         System.out.println(model.getClass());
     }

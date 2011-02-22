@@ -5,7 +5,7 @@
 	
 	<bean id="asyncLoadTestService" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" />
 	
-	<!-- asyncÏà¹ØÅäÖÃ -->
+	<!-- asyncç›¸å…³é…ç½® -->
 	<bean id="asyncLoadExecutor" class="com.agapple.asyncload.AsyncLoadExecutor" init-method="initital" destroy-method="destory">
 		<property name="poolSize" value="10" />
 		<property name="acceptCount" value="100" />
@@ -32,7 +32,7 @@
 			</map>
 		</property>
 	</bean>
-	<!-- Òì²½¼ÓÔØÄ£FactoryBean -->
+	<!-- å¼‚æ­¥åŠ è½½æ¨¡FactoryBean -->
 	<bean id="asyncLoadTestFactoryBean" class="com.agapple.asyncload.impl.spring.AsyncLoadFactoryBean">
 		<property name="target">
 			<ref bean="asyncLoadTestService" />
@@ -40,7 +40,7 @@
 		<property name="executor" ref="asyncLoadExecutor" />
 		<property name="config" ref="asyncLoadConfig" />
 	</bean>
-	<!-- Òì²½¼ÓÔØÄ£°åÀà -->
+	<!-- å¼‚æ­¥åŠ è½½æ¨¡æ¿ç±» -->
 	<bean id="asyncLoadTemplate" class="com.agapple.asyncload.impl.template.AsyncLoadTemplate" >
 		<property name="executor" ref="asyncLoadExecutor" />
 		<property name="defaultTimeout" value="3000" />

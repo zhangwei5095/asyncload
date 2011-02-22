@@ -20,7 +20,7 @@ import com.agapple.asyncload.domain.AsyncLoadTestService;
 import com.agapple.asyncload.impl.AsyncLoadProxyRepository;
 
 /**
- * @author jianghang 2011-1-29 ÏÂÎç06:06:29
+ * @author jianghang 2011-1-29 ä¸‹åˆ06:06:29
  */
 public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadTest {
 
@@ -29,7 +29,7 @@ public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadTest {
 
     @Before
     public void init() {
-        // Çå¿ÕrepositoryÄÚµÄcache¼ÇÂ¼
+        // æ¸…ç©ºrepositoryå†…çš„cacheè®°å½•
         try {
             TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
         } catch (Exception e) {
@@ -45,12 +45,12 @@ public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         System.out.println(model1.getDetail());
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) > 500l); // µÚÒ»´Î»á×èÈû, ÏìÓ¦Ê±¼ä»áÔÚ1000ms×óÓÒ
+        Assert.assertTrue((end - start) > 500l); // ç¬¬ä¸€æ¬¡ä¼šé˜»å¡, å“åº”æ—¶é—´ä¼šåœ¨1000mså·¦å³
 
         start = System.currentTimeMillis();
         System.out.println(model2.getDetail());
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // µÚ¶ş´Î²»»á×èÈû£¬µÚÒ»¸öÒÑ¾­×èÈûÁË1000ms
+        Assert.assertTrue((end - start) < 500l); // ç¬¬äºŒæ¬¡ä¸ä¼šé˜»å¡ï¼Œç¬¬ä¸€ä¸ªå·²ç»é˜»å¡äº†1000ms
 
         long model3_start = System.currentTimeMillis();
         AsyncLoadTestModel model3 = asyncLoadTestFactoryBean.getRemoteModel("three", 1000);
@@ -59,9 +59,9 @@ public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadTest {
         start = System.currentTimeMillis();
         System.out.println(model3.getDetail());
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 1500l); // ²»»á×èÈû£¬ÒòÎªlistÒÑ¾­×èÈûÁË1000ms
+        Assert.assertTrue((end - start) < 1500l); // ä¸ä¼šé˜»å¡ï¼Œå› ä¸ºlistå·²ç»é˜»å¡äº†1000ms
 
         System.out.println(model4.get(0));
-        Assert.assertTrue((System.currentTimeMillis() - model3_start) > 1500l); // ÒòÎª±»ÅÅ³ılist²»×ßasyncLoad£¬ËùÒÔÊ±¼äÊÇ½ü2000ms
+        Assert.assertTrue((System.currentTimeMillis() - model3_start) > 1500l); // å› ä¸ºè¢«æ’é™¤listä¸èµ°asyncLoadï¼Œæ‰€ä»¥æ—¶é—´æ˜¯è¿‘2000ms
     }
 }

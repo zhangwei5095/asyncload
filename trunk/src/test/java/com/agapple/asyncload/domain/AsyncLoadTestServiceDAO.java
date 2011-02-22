@@ -6,13 +6,13 @@
 package com.agapple.asyncload.domain;
 
 /**
- * @author jianghang 2011-1-21 ÏÂÎç10:46:19
+ * @author jianghang 2011-1-21 ä¸‹åˆ10:46:19
  */
 public class AsyncLoadTestServiceDAO {
 
     public void doSleep(long sleep) {
         try {
-            Thread.sleep(sleep); // Ë¯Ò»ÏÂ
+            Thread.sleep(sleep); // ç¡ä¸€ä¸‹
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

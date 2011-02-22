@@ -20,7 +20,7 @@ import com.agapple.asyncload.impl.template.AsyncLoadCallback;
 import com.agapple.asyncload.impl.template.AsyncLoadTemplate;
 
 /**
- * @author jianghang 2011-1-29 ÏÂÎç07:13:12
+ * @author jianghang 2011-1-29 ä¸‹åˆ07:13:12
  */
 public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
 
@@ -32,7 +32,7 @@ public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
 
     @Before
     public void init() {
-        // Çå¿ÕrepositoryÄÚµÄcache¼ÇÂ¼
+        // æ¸…ç©ºrepositoryå†…çš„cacheè®°å½•
         try {
             TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
         } catch (Exception e) {
@@ -50,14 +50,14 @@ public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
         System.out.println(model1.getDetail());
         end = System.currentTimeMillis();
         System.out.println(end - start);
-        Assert.assertTrue((end - start) > 500l); // µÚÒ»´Î»á×èÈû, ÏìÓ¦Ê±¼ä»áÔÚ1000ms×óÓÒ
+        Assert.assertTrue((end - start) > 500l); // ç¬¬ä¸€æ¬¡ä¼šé˜»å¡, å“åº”æ—¶é—´ä¼šåœ¨1000mså·¦å³
         Assert.assertTrue((end - start) < 1500l);
 
         start = System.currentTimeMillis();
         AsyncLoadTestModel model2 = asyncLoadTemplate.execute(new AsyncLoadCallback<AsyncLoadTestModel>() {
 
             public AsyncLoadTestModel doAsyncLoad() {
-                // ×Ü¹²sleep 2000ms
+                // æ€»å…±sleep 2000ms
                 return asyncLoadTestService.getRemoteModel("ljhtest", 1000);
             }
         });
@@ -66,7 +66,7 @@ public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
         System.out.println(model2.getDetail());
         end = System.currentTimeMillis();
         System.out.println(end - start);
-        Assert.assertTrue((end - start) > 500l); // Ö»»á×èÈûÒ»´Î 1000ms
+        Assert.assertTrue((end - start) > 500l); // åªä¼šé˜»å¡ä¸€æ¬¡ 1000ms
         Assert.assertTrue((end - start) < 1500l);
     }
 
@@ -78,32 +78,32 @@ public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
         AsyncLoadTestModel model2 = (AsyncLoadTestModel) asyncLoadTemplate.execute(new AsyncLoadCallback() {
 
             public Object doAsyncLoad() {
-                // ×Ü¹²sleep 1000ms
+                // æ€»å…±sleep 1000ms
                 return asyncLoadTestService.getRemoteModel("ljhtest", 1000);
             }
-        }, AsyncLoadTestModel.class); // ÕâÀïÖ¸¶¨ÁË·µ»ØÄ¿±êclass
+        }, AsyncLoadTestModel.class); // è¿™é‡ŒæŒ‡å®šäº†è¿”å›ç›®æ ‡class
         asyncLoadTestService.getRemoteModel("ljhtest", 1000);
 
         System.out.println(model2.getDetail());
         end = System.currentTimeMillis();
         System.out.println(end - start);
-        Assert.assertTrue((end - start) > 500l); // Ö»»á×èÈûÒ»´Î 1000ms
+        Assert.assertTrue((end - start) > 500l); // åªä¼šé˜»å¡ä¸€æ¬¡ 1000ms
         Assert.assertTrue((end - start) < 1500l);
     }
 
     @Test
     public void testTemplate_noGeneric() {
-        // Ã»ÓĞÖ¸¶¨·µ»Ø¶ÔÏó£¬»áÅ×Òì³£
+        // æ²¡æœ‰æŒ‡å®šè¿”å›å¯¹è±¡ï¼Œä¼šæŠ›å¼‚å¸¸
         try {
             asyncLoadTemplate.execute(new AsyncLoadCallback() {
 
                 public Object doAsyncLoad() {
-                    // ×Ü¹²sleep 2000ms
+                    // æ€»å…±sleep 2000ms
                     return asyncLoadTestService.getRemoteModel("ljhtest", 1000);
                 }
             });
 
-            Assert.fail();// ²»»áÖ´ĞĞµ½ÕâÒ»²½
+            Assert.fail();// ä¸ä¼šæ‰§è¡Œåˆ°è¿™ä¸€æ­¥
         } catch (Exception e) {
 
         }

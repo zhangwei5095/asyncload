@@ -9,16 +9,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Ìá¹©¶ÔÓ¦µÄproxy²Ö¿â,±ÜÃâÖØ¸´´´½¨¶ÔÓ¦µÄclass
+ * æä¾›å¯¹åº”çš„proxyä»“åº“,é¿å…é‡å¤åˆ›å»ºå¯¹åº”çš„class
  * 
- * @author jianghang 2011-1-24 ÏÂÎç03:36:17
+ * @author jianghang 2011-1-24 ä¸‹åˆ03:36:17
  */
 public class AsyncLoadProxyRepository {
 
-    private static Map<String, Class> reponsitory = new ConcurrentHashMap<String, Class>(); // ÔÚ·½·¨µ÷ÓÃ¼¶±ğ½øĞĞsync¿ØÖÆ,ÕâÀï²»ĞèÒªÊ¹ÓÃcocurrent°ü
+    private static Map<String, Class> reponsitory = new ConcurrentHashMap<String, Class>(); // åœ¨æ–¹æ³•è°ƒç”¨çº§åˆ«è¿›è¡Œsyncæ§åˆ¶,è¿™é‡Œä¸éœ€è¦ä½¿ç”¨cocurrentåŒ…
 
     /**
-     * Èç¹û´æÔÚ¶ÔÓ¦µÄkeyµÄProxyClass¾Í·µ»Ø£¬Ã»ÓĞÔò·µ»Ønull
+     * å¦‚æœå­˜åœ¨å¯¹åº”çš„keyçš„ProxyClasså°±è¿”å›ï¼Œæ²¡æœ‰åˆ™è¿”å›null
      * 
      * @param key
      * @return
@@ -28,13 +28,13 @@ public class AsyncLoadProxyRepository {
     }
 
     /**
-     * ×¢²á¶ÔÓ¦µÄproxyClassµ½²Ö¿âÖĞ
+     * æ³¨å†Œå¯¹åº”çš„proxyClassåˆ°ä»“åº“ä¸­
      * 
      * @param key
      * @param proxyClass
      */
     public static void registerProxy(String key, Class proxyClass) {
-        if (!reponsitory.containsKey(key)) { // ±ÜÃâÖØ¸´Ìá½»
+        if (!reponsitory.containsKey(key)) { // é¿å…é‡å¤æäº¤
             reponsitory.put(key, proxyClass);
         }
     }

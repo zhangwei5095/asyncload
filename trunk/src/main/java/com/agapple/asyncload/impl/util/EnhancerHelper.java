@@ -1,4 +1,4 @@
-package com.agapple.asyncload.impl;
+package com.agapple.asyncload.impl.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

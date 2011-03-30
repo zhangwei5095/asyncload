@@ -6,9 +6,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import com.agapple.asyncload.impl.pool.AsyncLoadThreadPool;
 
 /**
  * 异步加载的具体执行任务者, 支持Runable和Callable两种
@@ -21,13 +22,13 @@ public class AsyncLoadExecutor {
     public static final int        DEFAULT_ACCEPT_COUNT = 100;
     public static final HandleMode DEFAULT_MODE         = HandleMode.REJECT;
     private int                    poolSize;
-    private int                    acceptCount;                            // 等待队列长度，避免无限制提交请求
-    private HandleMode             mode;                                   // 默认为拒绝服务，用于控制accept队列满了以后的处理方式
+    private int                    acceptCount;                             // 等待队列长度，避免无限制提交请求
+    private HandleMode             mode;                                    // 默认为拒绝服务，用于控制accept队列满了以后的处理方式
     private ThreadPoolExecutor     pool;
     private volatile boolean       isInit               = false;
 
     enum HandleMode {
-        REJECT, BLOCK;
+        REJECT, CALLERUN;
     }
 
     public AsyncLoadExecutor(){
@@ -53,7 +54,7 @@ public class AsyncLoadExecutor {
             RejectedExecutionHandler handler = getHandler(mode);
             BlockingQueue queue = getBlockingQueue(acceptCount, mode);
             // 构造pool池
-            this.pool = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue, handler);
+            this.pool = new AsyncLoadThreadPool(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue, handler);
 
             isInit = true;
         }
@@ -82,14 +83,14 @@ public class AsyncLoadExecutor {
         if (acceptCount < 0) {
             return new LinkedBlockingQueue();
         } else if (acceptCount == 0) {
-            return HandleMode.REJECT == mode ? new ArrayBlockingQueue(1) : new SynchronousQueue();
+            return new ArrayBlockingQueue(1); // 等于0时等价于队列1
         } else {
             return new ArrayBlockingQueue(acceptCount);
         }
     }
 
     private RejectedExecutionHandler getHandler(HandleMode mode) {
-        return HandleMode.REJECT == mode ? new ThreadPoolExecutor.AbortPolicy() : new ThreadPoolExecutor.DiscardPolicy();
+        return HandleMode.REJECT == mode ? new AsyncLoadThreadPool.AbortPolicy() : new AsyncLoadThreadPool.CallerRunsPolicy();
     }
 
     // ====================== setter / getter ==========================

@@ -10,9 +10,16 @@ import java.io.Serializable;
 public class AsyncLoadTestModel implements Serializable {
 
     private static final long serialVersionUID = -5410019316926096126L;
-    public int                id;
-    public String             name;
-    public String             detail;
+
+    public AsyncLoadTestModel(int id, String name, String detail){
+        this.id = id;
+        this.name = name;
+        this.detail = detail;
+    }
+
+    public int    id;
+    public String name;
+    public String detail;
 
     public int getId() {
         return id;

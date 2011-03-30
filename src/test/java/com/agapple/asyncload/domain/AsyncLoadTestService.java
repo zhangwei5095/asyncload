@@ -20,4 +20,5 @@ public interface AsyncLoadTestService {
     public Object getRemoteObject(String name, long sleep);
 
     public List<AsyncLoadTestModel> listRemoteModel(String name, long sleep);
+
 }

@@ -1,6 +1,5 @@
 package com.agapple.asyncload;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -9,28 +8,16 @@ import javax.annotation.Resource;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
 import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
-import com.agapple.asyncload.impl.AsyncLoadProxyRepository;
 
 public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
 
     @Resource(name = "asyncLoadTestService")
     private AsyncLoadTestService asyncLoadTestService;
-
-    @Before
-    public void init() {
-        // 清空repository内的cache记录
-        try {
-            TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
-        } catch (Exception e) {
-            Assert.fail();
-        }
-    }
 
     @Test
     public void testProxy() {
@@ -71,6 +58,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         executor.destory();
     }
 
+    @Test
     public void testProxy_timeout() {
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 100l); // 设置超时时间为300ms
@@ -108,6 +96,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         Assert.assertTrue((end - start) < 500l); // 不会超时
     }
 
+    @Test
     public void testProxy_block_reject() {
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // 设置超时时间为300ms
@@ -162,6 +151,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         System.out.println(end - start);
     }
 
+    @Test
     public void testProxy_block_reject_noQueue() {
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // 设置超时时间为3000ms
@@ -204,11 +194,12 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         System.out.println(end - start);
     }
 
-    public void testProxy_block_discard() {
+    @Test
+    public void testProxy_block_callerRun() {
         // 初始化config
-        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // 设置超时时间为300ms
+        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // 设置超时时间为3000ms
         // 初始化executor
-        AsyncLoadExecutor executor = new AsyncLoadExecutor(1, 0, AsyncLoadExecutor.HandleMode.BLOCK); // 设置为忽略,10个工作线程,0个等待队列
+        AsyncLoadExecutor executor = new AsyncLoadExecutor(1, 0, AsyncLoadExecutor.HandleMode.CALLERUN); // 设置为caller线程运行模式,10个工作线程,0个等待队列
         executor.initital();
         // 初始化proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
@@ -217,11 +208,11 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
         proxy.setExecutor(executor);
 
         AsyncLoadTestService service = proxy.getProxy();
-        ExecutorService executeService = Executors.newFixedThreadPool(10);
+        ExecutorService executeService = Executors.newFixedThreadPool(2);
         long start = 0, end = 0;
         start = System.currentTimeMillis();
         try {
-            for (int i = 0; i < 20; i++) { // 创建20个任务
+            for (int i = 0; i < 3; i++) { // 创建10个任务
                 final AsyncLoadTestModel model = service.getRemoteModel("first:" + i, 1000); // 每个请求sleep 1000ms
                 executeService.submit(new Runnable() {
 

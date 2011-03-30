@@ -1,16 +1,12 @@
 package com.agapple.asyncload;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Resource;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
-import com.agapple.asyncload.impl.AsyncLoadProxyRepository;
 import com.agapple.asyncload.impl.template.AsyncLoadCallback;
 import com.agapple.asyncload.impl.template.AsyncLoadTemplate;
 
@@ -24,16 +20,6 @@ public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
 
     @Resource(name = "asyncLoadTestService")
     private AsyncLoadTestService asyncLoadTestService;
-
-    @Before
-    public void init() {
-        // 清空repository内的cache记录
-        try {
-            TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
-        } catch (Exception e) {
-            Assert.fail();
-        }
-    }
 
     @Test
     public void testTemplate() {

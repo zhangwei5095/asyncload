@@ -3,10 +3,12 @@ package com.agapple.asyncload.impl;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import net.sf.cglib.core.ReflectUtils;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.LazyLoader;
+
+import com.agapple.asyncload.impl.util.AsyncLoadReflectionHelper;
+import com.agapple.asyncload.impl.util.EnhancerHelper;
 
 /**
  * 异步加载返回的proxy result
@@ -39,7 +41,7 @@ public class AsyncLoadResult {
         EnhancerHelper.setThreadCallbacks(proxyClass, new Callback[] { new AsyncLoadFutureInterceptor() });
         try {
             // 返回对象
-            return ReflectUtils.newInstance(proxyClass);
+            return AsyncLoadReflectionHelper.newInstance(proxyClass);
         } finally {
             // clear thread callbacks to allow them to be gc'd
             EnhancerHelper.setThreadCallbacks(proxyClass, null);

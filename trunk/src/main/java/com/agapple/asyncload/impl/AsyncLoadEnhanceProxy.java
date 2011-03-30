@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import net.sf.cglib.core.ReflectUtils;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Dispatcher;
@@ -22,6 +21,8 @@ import com.agapple.asyncload.AsyncLoadConfig;
 import com.agapple.asyncload.AsyncLoadExecutor;
 import com.agapple.asyncload.AsyncLoadMethodMatch;
 import com.agapple.asyncload.AsyncLoadProxy;
+import com.agapple.asyncload.impl.util.AsyncLoadReflectionHelper;
+import com.agapple.asyncload.impl.util.EnhancerHelper;
 
 /**
  * 基于cglib enhance proxy的实现
@@ -172,7 +173,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
         EnhancerHelper.setThreadCallbacks(proxyClass, new Callback[] { new AsyncLoadDirect(),
                 new AsyncLoadInterceptor() });
         try {
-            return (T) ReflectUtils.newInstance(proxyClass);
+            return (T) AsyncLoadReflectionHelper.newInstance(proxyClass);
         } finally {
             // clear thread callbacks to allow them to be gc'd
             EnhancerHelper.setThreadCallbacks(proxyClass, null);

@@ -12,14 +12,15 @@ public class AsyncLoadTestServiceImpl implements AsyncLoadTestService {
 
     private AsyncLoadTestServiceDAO asyncLoadTestServiceDAO;
 
+    protected AsyncLoadTestServiceImpl(){
+
+    }
+
     public AsyncLoadTestModel getRemoteModel(String name, long sleep) {
         if (sleep > 0) {
             asyncLoadTestServiceDAO.doSleep(sleep);
         }
-        AsyncLoadTestModel model = new AsyncLoadTestModel();
-        model.setName(name);
-        model.setId(1);
-        model.setDetail(name);
+        AsyncLoadTestModel model = new AsyncLoadTestModel(1, name, name);
         return model;
     }
 
@@ -29,10 +30,7 @@ public class AsyncLoadTestServiceImpl implements AsyncLoadTestService {
             if (sleep > 0) {
                 asyncLoadTestServiceDAO.doSleep(sleep);
             }
-            AsyncLoadTestModel model = new AsyncLoadTestModel();
-            model.setName(name);
-            model.setId(i);
-            model.setDetail(name);
+            AsyncLoadTestModel model = new AsyncLoadTestModel(1, name, name);
             models.add(model);
         }
         return models;
@@ -51,10 +49,6 @@ public class AsyncLoadTestServiceImpl implements AsyncLoadTestService {
         }
     }
 
-    public void setAsyncLoadTestServiceDAO(AsyncLoadTestServiceDAO asyncLoadTestServiceDAO) {
-        this.asyncLoadTestServiceDAO = asyncLoadTestServiceDAO;
-    }
-
     public String getRemoteName(String name, long sleep) {
         if (sleep > 0) {
             asyncLoadTestServiceDAO.doSleep(sleep);
@@ -67,6 +61,10 @@ public class AsyncLoadTestServiceImpl implements AsyncLoadTestService {
             asyncLoadTestServiceDAO.doSleep(sleep);
         }
         return name;
+    }
+
+    public void setAsyncLoadTestServiceDAO(AsyncLoadTestServiceDAO asyncLoadTestServiceDAO) {
+        this.asyncLoadTestServiceDAO = asyncLoadTestServiceDAO;
     }
 
 }

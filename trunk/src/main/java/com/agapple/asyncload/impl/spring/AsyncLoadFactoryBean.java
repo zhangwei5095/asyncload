@@ -6,7 +6,6 @@ import org.springframework.util.Assert;
 
 import com.agapple.asyncload.AsyncLoadConfig;
 import com.agapple.asyncload.AsyncLoadExecutor;
-import com.agapple.asyncload.AsyncLoadProxy;
 import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
 
 /**
@@ -17,16 +16,18 @@ import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
 public class AsyncLoadFactoryBean implements FactoryBean, InitializingBean {
 
     private Object            target;
+    private Class             targetClass;
     private AsyncLoadExecutor executor;
     private AsyncLoadConfig   config;
 
     public Object getObject() throws Exception {
-        AsyncLoadProxy proxy = new AsyncLoadEnhanceProxy(target, config, executor);
+        AsyncLoadEnhanceProxy proxy = new AsyncLoadEnhanceProxy(target, config, executor);
+        proxy.setTargetClass(targetClass);
         return proxy.getProxy(); // 返回对应的代理对象
     }
 
     public Class getObjectType() {
-        return target.getClass();
+        return targetClass;
     }
 
     public boolean isSingleton() {
@@ -52,6 +53,10 @@ public class AsyncLoadFactoryBean implements FactoryBean, InitializingBean {
 
     public void setTarget(Object target) {
         this.target = target;
+    }
+
+    public void setTargetClass(Class targetClass) {
+        this.targetClass = targetClass;
     }
 
 }

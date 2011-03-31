@@ -22,10 +22,14 @@ import com.agapple.asyncload.AsyncLoadExecutor;
 import com.agapple.asyncload.AsyncLoadMethodMatch;
 import com.agapple.asyncload.AsyncLoadProxy;
 import com.agapple.asyncload.impl.util.AsyncLoadReflectionHelper;
-import com.agapple.asyncload.impl.util.EnhancerHelper;
 
 /**
  * 基于cglib enhance proxy的实现
+ * 
+ * <pre>
+ * 参数说明：
+ * 1. targetClass : 用于明确cglib生成的目标对象类型。比如一般的service都有一个接口，但serviceImpl有时已经被进行一次cglib代理，生成了final对象，这里可以指定targetClass为其接口对象
+ * </pre>
  * 
  * @author jianghang 2011-1-21 下午10:56:39
  */
@@ -34,6 +38,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
     private T                 service;
     private AsyncLoadConfig   config;
     private AsyncLoadExecutor executor;
+    private Class<T>          targetClass;
 
     public AsyncLoadEnhanceProxy(){
     }
@@ -46,6 +51,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
         this.service = service;
         this.config = config;
         this.executor = executor;
+        this.targetClass = (Class<T>) service.getClass();// 默认的代理class对象即为service
     }
 
     public T getProxy() {
@@ -61,7 +67,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
         Assert.notNull(config, "config should not be null");
         Assert.notNull(executor, "executor should not be null");
 
-        if (Modifier.isFinal(service.getClass().getModifiers())) { // 目前暂不支持final类型的处理，以后可以考虑使用jdk proxy
+        if (Modifier.isFinal(targetClass.getModifiers())) { // 目前暂不支持final类型的处理，以后可以考虑使用jdk proxy
             throw new IllegalArgumentException("Enhance proxy not support final class :" + service.getClass());
         }
     }
@@ -159,24 +165,28 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
      * @return
      */
     private T getProxyInternal() {
-        Class proxyClass = AsyncLoadProxyRepository.getProxy(service.getClass().getCanonicalName());
+        Class proxyClass = AsyncLoadProxyRepository.getProxy(targetClass.getCanonicalName());
         if (proxyClass == null) {
             Enhancer enhancer = new Enhancer();
-            enhancer.setSuperclass(this.service.getClass());
+            if (targetClass.isInterface()) { // 判断是否为接口，优先进行接口代理可以解决service为final
+                enhancer.setInterfaces(new Class[] { targetClass });
+            } else {
+                enhancer.setSuperclass(targetClass);
+            }
             enhancer.setCallbackTypes(new Class[] { AsyncLoadDirect.class, AsyncLoadInterceptor.class });
             enhancer.setCallbackFilter(new AsyncLoadCallbackFilter());
             proxyClass = enhancer.createClass();
             // 注册proxyClass
-            AsyncLoadProxyRepository.registerProxy(service.getClass().getCanonicalName(), proxyClass);
+            AsyncLoadProxyRepository.registerProxy(targetClass.getCanonicalName(), proxyClass);
         }
 
-        EnhancerHelper.setThreadCallbacks(proxyClass, new Callback[] { new AsyncLoadDirect(),
-                new AsyncLoadInterceptor() });
+        Enhancer.registerStaticCallbacks(proxyClass,
+                                         new Callback[] { new AsyncLoadDirect(), new AsyncLoadInterceptor() });
         try {
             return (T) AsyncLoadReflectionHelper.newInstance(proxyClass);
         } finally {
             // clear thread callbacks to allow them to be gc'd
-            EnhancerHelper.setThreadCallbacks(proxyClass, null);
+            Enhancer.registerStaticCallbacks(proxyClass, null);
         }
     }
 
@@ -184,6 +194,9 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
 
     public void setService(T service) {
         this.service = service;
+        if (targetClass == null) {
+            this.targetClass = (Class<T>) service.getClass();
+        }
     }
 
     public void setConfig(AsyncLoadConfig config) {
@@ -192,6 +205,10 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
 
     public void setExecutor(AsyncLoadExecutor executor) {
         this.executor = executor;
+    }
+
+    public void setTargetClass(Class targetClass) {
+        this.targetClass = targetClass;
     }
 
 }

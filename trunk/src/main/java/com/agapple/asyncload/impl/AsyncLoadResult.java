@@ -2,13 +2,13 @@ package com.agapple.asyncload.impl;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.LazyLoader;
 
 import com.agapple.asyncload.impl.util.AsyncLoadReflectionHelper;
-import com.agapple.asyncload.impl.util.EnhancerHelper;
 
 /**
  * 异步加载返回的proxy result
@@ -38,13 +38,13 @@ public class AsyncLoadResult {
             AsyncLoadProxyRepository.registerProxy(returnClass.getCanonicalName(), proxyClass);
         }
 
-        EnhancerHelper.setThreadCallbacks(proxyClass, new Callback[] { new AsyncLoadFutureInterceptor() });
+        Enhancer.registerStaticCallbacks(proxyClass, new Callback[] { new AsyncLoadFutureInterceptor() });
         try {
             // 返回对象
             return AsyncLoadReflectionHelper.newInstance(proxyClass);
         } finally {
             // clear thread callbacks to allow them to be gc'd
-            EnhancerHelper.setThreadCallbacks(proxyClass, null);
+            Enhancer.registerStaticCallbacks(proxyClass, null);
         }
 
     }
@@ -52,8 +52,13 @@ public class AsyncLoadResult {
     class AsyncLoadFutureInterceptor implements LazyLoader {
 
         public Object loadObject() throws Exception {
-            // 使用cglib lazyLoader，避免每次调用future
-            return future.get(timeout, TimeUnit.MILLISECONDS);
+            try {
+                // 使用cglib lazyLoader，避免每次调用future
+                return future.get(timeout, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                future.cancel(true);
+                throw e;
+            }
         }
 
     }

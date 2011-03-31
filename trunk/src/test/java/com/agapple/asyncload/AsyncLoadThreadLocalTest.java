@@ -19,6 +19,13 @@ import com.agapple.asyncload.impl.template.AsyncLoadTemplate;
 /**
  * 测试下ThreadLocal继承
  * 
+ * <pre>
+ * 在异步加载中对ThreadLocal为只读,尽量不对其set操作，有set操作潜在的分析：
+ * 1. 两个并行加载代码块，B依赖A的ThreadLocal设置
+ * 2. 并行加载代码快和caller线程存在ThreadLocal依赖，caller线程依赖其ThreadLocal设置
+ * 3. 两个并行加载代码块，各自设置了自己的ThreadLocal信息，需要在caller线程进行合并
+ * </pre>
+ * 
  * @author jianghang 2011-3-28 下午11:00:35
  */
 public class AsyncLoadThreadLocalTest extends BaseAsyncLoadTest {

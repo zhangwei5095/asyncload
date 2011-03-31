@@ -21,7 +21,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
 
     @Test
     public void testProxy() {
-        // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/home/ljh/cglib");
+        // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
         // 初始化executor

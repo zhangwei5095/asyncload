@@ -103,19 +103,21 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
                     // 处理这样的情况：
                     // 1. 如果caller线程没有使用ThreadLocal对象，而异步加载的runner线程执行中使用了ThreadLocal对象，则需要复制对象到caller线程上
                     // 2. 如果caller线程有使用ThreadLocal对象，这时异步加载的runner线程因为直接使用了ThreadLocal引用，不需要进行重新复制
-                    if (ReflectionUtils.getField(threadLocalField, afuture.getCallerThread()) == null) {// 如果caller为null
-                        Object obj = ReflectionUtils.getField(threadLocalField, afuture.getRunnerThread());
-                        if (obj != null) { // 并且runner的threadLocal有值,则拷贝runner信息到caller上
-                            ReflectionUtils.setField(threadLocalField, afuture.getCallerThread(), obj);
-                        }
-                    }
-
-                    if (ReflectionUtils.getField(inheritableThreadLocalField, afuture.getCallerThread()) == null) {// 如果caller为null
-                        Object obj = ReflectionUtils.getField(inheritableThreadLocalField, afuture.getRunnerThread());
-                        if (obj != null) { // 并且runner的threadLocal有值,则拷贝runner信息到caller上
-                            ReflectionUtils.setField(inheritableThreadLocalField, afuture.getCallerThread(), obj);
-                        }
-                    }
+                    // if (ReflectionUtils.getField(threadLocalField, afuture.getCallerThread()) == null) {//
+                    // 如果caller为null
+                    // Object obj = ReflectionUtils.getField(threadLocalField, afuture.getRunnerThread());
+                    // if (obj != null) { // 并且runner的threadLocal有值,则拷贝runner信息到caller上
+                    // ReflectionUtils.setField(threadLocalField, afuture.getCallerThread(), obj);
+                    // }
+                    // }
+                    //
+                    // if (ReflectionUtils.getField(inheritableThreadLocalField, afuture.getCallerThread()) == null) {//
+                    // 如果caller为null
+                    // Object obj = ReflectionUtils.getField(inheritableThreadLocalField, afuture.getRunnerThread());
+                    // if (obj != null) { // 并且runner的threadLocal有值,则拷贝runner信息到caller上
+                    // ReflectionUtils.setField(inheritableThreadLocalField, afuture.getCallerThread(), obj);
+                    // }
+                    // }
                     // 清理runner线程的ThreadLocal，为下一个task服务
                     ReflectionUtils.setField(threadLocalField, afuture.getRunnerThread(), null);
                     ReflectionUtils.setField(inheritableThreadLocalField, afuture.getRunnerThread(), null);

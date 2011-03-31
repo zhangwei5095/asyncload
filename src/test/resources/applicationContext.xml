@@ -34,6 +34,7 @@
 	</bean>
 	<!-- 异步加载模FactoryBean -->
 	<bean id="asyncLoadTestFactoryBean" class="com.agapple.asyncload.impl.spring.AsyncLoadFactoryBean">
+		<property name="targetClass" value="com.agapple.asyncload.domain.AsyncLoadTestService" /><!-- 指定具体的代理目标class -->
 		<property name="target">
 			<ref bean="asyncLoadTestService" />
 		</property>

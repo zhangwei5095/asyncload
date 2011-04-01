@@ -15,7 +15,7 @@ import com.agapple.asyncload.domain.AsyncLoadTestService;
 /**
  * @author jianghang 2011-1-29 下午06:06:29
  */
-public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadTest {
+public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadNoRunTest {
 
     @Resource(name = "asyncLoadTestFactoryBean")
     private AsyncLoadTestService asyncLoadTestFactoryBean;

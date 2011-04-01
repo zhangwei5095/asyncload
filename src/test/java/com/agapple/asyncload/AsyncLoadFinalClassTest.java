@@ -16,7 +16,7 @@ import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
  * 
  * @author jianghang 2011-3-31 上午11:50:04
  */
-public class AsyncLoadFinalClassTest extends BaseAsyncLoadTest {
+public class AsyncLoadFinalClassTest extends BaseAsyncLoadNoRunTest {
 
     @Test
     public void testStringFinal() {
@@ -85,7 +85,6 @@ public class AsyncLoadFinalClassTest extends BaseAsyncLoadTest {
 
     final class FinalServiceImpl implements FinalService {
 
-        @Override
         public FinalModel count(int i) {
             FinalModel model = new FinalModel();
             model.setCount(i);

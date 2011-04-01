@@ -20,7 +20,7 @@ import com.agapple.asyncload.impl.AsyncLoadResult;
 public class AsyncLoadTemplate {
 
     private AsyncLoadExecutor executor;
-    private Long              defaultTimeout = AsyncLoadConfig.DEFAULT_TIME_OUT; // 3秒
+    private Long              defaultTimeout = AsyncLoadConfig.DEFAULT_TIME_OUT; // 设置默认值
 
     /**
      * 异步执行callback模板,设置默认的超时时间，同时返回对应的proxy model,执行AsyncLoad

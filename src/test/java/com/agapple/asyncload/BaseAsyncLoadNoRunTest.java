@@ -3,20 +3,19 @@ package com.agapple.asyncload;
 import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.Assert;
-import net.sf.cglib.core.DebuggingClassWriter;
 
 import org.junit.Before;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
 
 import com.agapple.asyncload.impl.AsyncLoadProxyRepository;
 
-@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
-public class BaseAsyncLoadTest extends AbstractJUnit4SpringContextTests {
+@ContextConfiguration(locations = { "classpath:asyncload/applicationContext.xml" })
+public class BaseAsyncLoadNoRunTest extends AbstractJUnit38SpringContextTests {
 
     @Before
-    public void init() {
-        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
+    public void setUp() {
+        // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
         // 清空repository内的cache记录
         try {
             TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());

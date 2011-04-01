@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class AsyncLoadConfig {
 
-    public static final Long                DEFAULT_TIME_OUT = 3 * 1000L;
+    public static final Long                DEFAULT_TIME_OUT = 0L;              // 默认不设置超时,保持系统兼容性
     private Long                            defaultTimeout   = DEFAULT_TIME_OUT; // 单位ms
     private Map<AsyncLoadMethodMatch, Long> matches;
 
@@ -26,7 +26,7 @@ public class AsyncLoadConfig {
     public Map<AsyncLoadMethodMatch, Long> getMatches() {
         if (matches == null) {
             matches = new HashMap<AsyncLoadMethodMatch, Long>();
-            matches.put(AsyncLoadMethodMatch.TRUE, defaultTimeout); // 默认值为3秒
+            matches.put(AsyncLoadMethodMatch.TRUE, defaultTimeout);
         }
 
         return matches;

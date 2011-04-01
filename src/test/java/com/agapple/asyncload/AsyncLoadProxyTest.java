@@ -14,14 +14,13 @@ import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
 import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
 
-public class AsyncLoadProxyTest extends BaseAsyncLoadTest {
+public class AsyncLoadProxyTest extends BaseAsyncLoadNoRunTest {
 
     @Resource(name = "asyncLoadTestService")
     private AsyncLoadTestService asyncLoadTestService;
 
     @Test
     public void testProxy() {
-        // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
         // 初始化executor

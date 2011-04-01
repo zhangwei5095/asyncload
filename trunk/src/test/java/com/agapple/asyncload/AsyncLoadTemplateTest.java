@@ -13,7 +13,7 @@ import com.agapple.asyncload.impl.template.AsyncLoadTemplate;
 /**
  * @author jianghang 2011-1-29 下午07:13:12
  */
-public class AsyncLoadTemplateTest extends BaseAsyncLoadTest {
+public class AsyncLoadTemplateTest extends BaseAsyncLoadNoRunTest {
 
     @Resource(name = "asyncLoadTemplate")
     private AsyncLoadTemplate    asyncLoadTemplate;

@@ -1,7 +1,6 @@
 package com.agapple.asyncload;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 
@@ -13,28 +12,20 @@ import org.junit.Test;
 import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
 import com.agapple.asyncload.impl.AsyncLoadEnhanceProxy;
-import com.agapple.asyncload.impl.AsyncLoadProxyRepository;
 
 /**
  * 测试对应returnClass不同类型
  * 
  * @author jianghang 2011-2-9 下午11:06:35
  */
-public class AsyncLoadReturnClassTest extends BaseAsyncLoadTest {
+public class AsyncLoadReturnClassTest extends BaseAsyncLoadNoRunTest {
 
     @Resource(name = "asyncLoadTestService")
     private AsyncLoadTestService asyncLoadTestService;
     private AsyncLoadTestService proxy;
 
     @Before
-    public void init() {
-        // 清空repository内的cache记录
-        try {
-            TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());
-        } catch (Exception e) {
-            Assert.fail();
-        }
-
+    public void setUp() {
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
         // 初始化executor

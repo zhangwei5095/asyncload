@@ -13,7 +13,7 @@ import com.agapple.asyncload.impl.AsyncLoadPerl5RegexpMethodMatcher;
  * 
  * @author jianghang 2011-1-29 下午05:06:25
  */
-public class AsyncLoadMethodMatchTest extends BaseAsyncLoadTest {
+public class AsyncLoadMethodMatchTest extends BaseAsyncLoadNoRunTest {
 
     private static final String METHOD4 = "doOtherthing";
     private static final String METHOD3 = "doSomething";

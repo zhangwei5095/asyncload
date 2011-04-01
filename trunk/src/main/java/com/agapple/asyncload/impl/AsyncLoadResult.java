@@ -54,7 +54,11 @@ public class AsyncLoadResult {
         public Object loadObject() throws Exception {
             try {
                 // 使用cglib lazyLoader，避免每次调用future
-                return future.get(timeout, TimeUnit.MILLISECONDS);
+                if (timeout <= 0) {// <=0处理，不进行超时控制
+                    return future.get();
+                } else {
+                    return future.get(timeout, TimeUnit.MILLISECONDS);
+                }
             } catch (TimeoutException e) {
                 future.cancel(true);
                 throw e;

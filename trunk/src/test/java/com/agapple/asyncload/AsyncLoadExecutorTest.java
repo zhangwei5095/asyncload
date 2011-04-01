@@ -12,7 +12,7 @@ import org.junit.Test;
  * 
  * @author jianghang 2011-1-24 下午09:17:02
  */
-public class AsyncLoadExecutorTest extends BaseAsyncLoadTest {
+public class AsyncLoadExecutorTest extends BaseAsyncLoadNoRunTest {
 
     private static final String POOL_NAME = "pool";
 

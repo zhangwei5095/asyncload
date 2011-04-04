@@ -68,9 +68,9 @@ public class AsyncLoadReflectionHelperTest {
         DefaultValueObjectA objecta = (DefaultValueObjectA) AsyncLoadReflectionHelper.newInstance(DefaultValueObjectA.class);
         Assert.assertEquals(objecta.a, 0);
         Assert.assertArrayEquals(objecta.arr, new Integer[] {});
-        Assert.assertEquals(objecta.b, null);
-        // Assert.assertEquals(objecta.b.a, 0);
-        // Assert.assertArrayEquals(objecta.b.arr, new Integer[] {});
+        // Assert.assertEquals(objecta.b, null);
+        Assert.assertEquals(objecta.b.a, 0);
+        Assert.assertArrayEquals(objecta.b.arr, new Integer[] {});
 
     }
 }

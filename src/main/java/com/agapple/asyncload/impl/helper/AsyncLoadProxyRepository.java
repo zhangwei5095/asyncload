@@ -1,4 +1,4 @@
-package com.agapple.asyncload.impl;
+package com.agapple.asyncload.impl.helper;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

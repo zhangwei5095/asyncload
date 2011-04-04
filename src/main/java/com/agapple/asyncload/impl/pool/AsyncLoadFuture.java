@@ -21,6 +21,8 @@ public class AsyncLoadFuture<V> extends FutureTask<V> {
 
     private Thread callerThread; // 记录提交runnable的thread，在ThreadPool中用于提取ThreadLocal
     private Thread runnerThread;
+    private long   startTime = 0; // 记录下future开始执行的时间
+    private long   endTime   = 0; // 记录下future执行结束时间
 
     public AsyncLoadFuture(Callable<V> callable){
         super(callable);
@@ -33,7 +35,13 @@ public class AsyncLoadFuture<V> extends FutureTask<V> {
     }
 
     @Override
+    protected void done() {
+        endTime = System.currentTimeMillis(); // 记录一下时间点，Future在cancel调用，正常完成，或者运行出异常都会回调该方法
+    }
+
+    @Override
     public void run() {
+        startTime = System.currentTimeMillis();
         runnerThread = Thread.currentThread(); // 记录的下具体pool中的runnerThread
         super.run();
     }
@@ -46,6 +54,14 @@ public class AsyncLoadFuture<V> extends FutureTask<V> {
 
     public Thread getRunnerThread() {
         return runnerThread;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
     }
 
 }

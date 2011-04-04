@@ -198,7 +198,7 @@ public class AsyncLoadProxyTest extends BaseAsyncLoadNoRunTest {
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l); // 设置超时时间为3000ms
         // 初始化executor
-        AsyncLoadExecutor executor = new AsyncLoadExecutor(1, 0, AsyncLoadExecutor.HandleMode.CALLERUN); // 设置为caller线程运行模式,10个工作线程,0个等待队列
+        AsyncLoadExecutor executor = new AsyncLoadExecutor(1, 0, AsyncLoadExecutor.HandleMode.CALLERRUN); // 设置为caller线程运行模式,10个工作线程,0个等待队列
         executor.initital();
         // 初始化proxy
         AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();

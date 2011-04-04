@@ -12,10 +12,6 @@ public class AsyncLoadTestServiceImpl implements AsyncLoadTestService {
 
     private AsyncLoadTestServiceDAO asyncLoadTestServiceDAO;
 
-    protected AsyncLoadTestServiceImpl(){
-
-    }
-
     public AsyncLoadTestModel getRemoteModel(String name, long sleep) {
         if (sleep > 0) {
             asyncLoadTestServiceDAO.doSleep(sleep);

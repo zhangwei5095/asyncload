@@ -11,6 +11,7 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import org.springframework.util.Assert;
 
 import com.agapple.asyncload.AsyncLoadMethodMatch;
+import com.agapple.asyncload.impl.exceptions.AsyncLoadException;
 
 /**
  * 基于Perl5 oro进行正则匹配的matcher
@@ -87,7 +88,7 @@ public class AsyncLoadPerl5RegexpMethodMatcher implements AsyncLoadMethodMatch {
             try {
                 destination[i] = compiler.compile(source[i], Perl5Compiler.READ_ONLY_MASK);
             } catch (MalformedPatternException ex) {
-                throw new IllegalArgumentException(ex.getMessage());
+                throw new AsyncLoadException(ex.getMessage());
             }
         }
         return destination;

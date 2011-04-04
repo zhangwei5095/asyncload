@@ -6,10 +6,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.agapple.asyncload.impl.pool.AsyncLoadThreadPool;
+import com.agapple.asyncload.impl.pool.NamedThreadFactory;
 
 /**
  * 异步加载的具体执行任务者, 支持Runable和Callable两种
@@ -18,17 +19,18 @@ import com.agapple.asyncload.impl.pool.AsyncLoadThreadPool;
  */
 public class AsyncLoadExecutor {
 
-    public static final int        DEFAULT_POOL_SIZE    = 20;
-    public static final int        DEFAULT_ACCEPT_COUNT = 100;
-    public static final HandleMode DEFAULT_MODE         = HandleMode.REJECT;
+    public static final int        DEFAULT_POOL_SIZE      = 20;
+    public static final int        DEFAULT_ACCEPT_COUNT   = 100;
+    public static final HandleMode DEFAULT_MODE           = HandleMode.REJECT;
     private int                    poolSize;
-    private int                    acceptCount;                             // 等待队列长度，避免无限制提交请求
-    private HandleMode             mode;                                    // 默认为拒绝服务，用于控制accept队列满了以后的处理方式
-    private ThreadPoolExecutor     pool;
-    private volatile boolean       isInit               = false;
+    private int                    acceptCount;                               // 等待队列长度，避免无限制提交请求
+    private HandleMode             mode;                                      // 默认为拒绝服务，用于控制accept队列满了以后的处理方式
+    private AsyncLoadThreadPool    pool;
+    private volatile boolean       isInit                 = false;
+    private boolean                needThreadLocalSupport = false;
 
     enum HandleMode {
-        REJECT, CALLERUN;
+        REJECT, CALLERRUN;
     }
 
     public AsyncLoadExecutor(){
@@ -54,7 +56,9 @@ public class AsyncLoadExecutor {
             RejectedExecutionHandler handler = getHandler(mode);
             BlockingQueue queue = getBlockingQueue(acceptCount, mode);
             // 构造pool池
-            this.pool = new AsyncLoadThreadPool(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue, handler);
+            this.pool = new AsyncLoadThreadPool(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue,
+                                                new NamedThreadFactory(), handler);
+            this.pool.setNeedThreadLocalSupport(new AtomicBoolean(needThreadLocalSupport));
 
             isInit = true;
         }
@@ -109,6 +113,10 @@ public class AsyncLoadExecutor {
 
     public void setMode(String mode) {
         this.mode = HandleMode.valueOf(mode);
+    }
+
+    public void setNeedThreadLocalSupport(boolean needThreadLocalSupport) {
+        this.needThreadLocalSupport = needThreadLocalSupport;
     }
 
     // ======================= help method ==========================

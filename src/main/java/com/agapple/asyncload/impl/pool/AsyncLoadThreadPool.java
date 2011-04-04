@@ -13,6 +13,7 @@ import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -33,6 +34,8 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
     private static final Field threadLocalField            = ReflectionUtils.findField(Thread.class, "threadLocals");
     private static final Field inheritableThreadLocalField = ReflectionUtils.findField(Thread.class,
                                                                                        "inheritableThreadLocals");
+
+    private AtomicBoolean      needThreadLocalSupport      = new AtomicBoolean(false);                               // 设置是否需要进行threadLocal控制
 
     // 继承自ThreadPoolExecutor的构造函数
     public AsyncLoadThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
@@ -69,23 +72,10 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         // 在执行之前处理下ThreadPool的属性继承
-        if (r instanceof AsyncLoadFuture) {
-            try {
-                threadLocalField.setAccessible(true);
-                inheritableThreadLocalField.setAccessible(true);
-                AsyncLoadFuture afuture = (AsyncLoadFuture) r;
-                // threadlocal属性复制,注意是引用复制
-                ReflectionUtils.setField(threadLocalField, t, ReflectionUtils.getField(threadLocalField,
-                                                                                       afuture.getCallerThread()));
-                // inheritableThreadLocal属性复制，注意是引用复制
-                ReflectionUtils.setField(inheritableThreadLocalField, t,
-                                         ReflectionUtils.getField(inheritableThreadLocalField,
-                                                                  afuture.getCallerThread()));
-
-            } finally {
-                threadLocalField.setAccessible(false);
-                inheritableThreadLocalField.setAccessible(false);
-            }
+        if (r instanceof AsyncLoadFuture && needThreadLocalSupport.get()) {
+            AsyncLoadFuture afuture = (AsyncLoadFuture) r;
+            initThreadLocal(threadLocalField, afuture.getCallerThread(), t);
+            initThreadLocal(inheritableThreadLocalField, afuture.getCallerThread(), t);
         }
 
         super.beforeExecute(t, r);
@@ -94,40 +84,65 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         // 在执行结束后清理下ThreadPool的属性，GC处理
-        if (r instanceof AsyncLoadFuture) {
-            try {
-                threadLocalField.setAccessible(true);
-                inheritableThreadLocalField.setAccessible(true);
-                AsyncLoadFuture afuture = (AsyncLoadFuture) r;
-                if (afuture.getRunnerThread() != null) {// 判断下是否为null
-                    // 处理这样的情况：
-                    // 1. 如果caller线程没有使用ThreadLocal对象，而异步加载的runner线程执行中使用了ThreadLocal对象，则需要复制对象到caller线程上
-                    // 2. 如果caller线程有使用ThreadLocal对象，这时异步加载的runner线程因为直接使用了ThreadLocal引用，不需要进行重新复制
-                    // if (ReflectionUtils.getField(threadLocalField, afuture.getCallerThread()) == null) {//
-                    // 如果caller为null
-                    // Object obj = ReflectionUtils.getField(threadLocalField, afuture.getRunnerThread());
-                    // if (obj != null) { // 并且runner的threadLocal有值,则拷贝runner信息到caller上
-                    // ReflectionUtils.setField(threadLocalField, afuture.getCallerThread(), obj);
-                    // }
-                    // }
-                    //
-                    // if (ReflectionUtils.getField(inheritableThreadLocalField, afuture.getCallerThread()) == null) {//
-                    // 如果caller为null
-                    // Object obj = ReflectionUtils.getField(inheritableThreadLocalField, afuture.getRunnerThread());
-                    // if (obj != null) { // 并且runner的threadLocal有值,则拷贝runner信息到caller上
-                    // ReflectionUtils.setField(inheritableThreadLocalField, afuture.getCallerThread(), obj);
-                    // }
-                    // }
-                    // 清理runner线程的ThreadLocal，为下一个task服务
-                    ReflectionUtils.setField(threadLocalField, afuture.getRunnerThread(), null);
-                    ReflectionUtils.setField(inheritableThreadLocalField, afuture.getRunnerThread(), null);
-                }
-            } finally {
-                threadLocalField.setAccessible(false);
-                inheritableThreadLocalField.setAccessible(false);
-            }
+        if (r instanceof AsyncLoadFuture && needThreadLocalSupport.get()) {
+            AsyncLoadFuture afuture = (AsyncLoadFuture) r;
+            recoverThreadLocal(threadLocalField, afuture.getCallerThread(), afuture.getRunnerThread());
+            recoverThreadLocal(inheritableThreadLocalField, afuture.getCallerThread(), afuture.getRunnerThread());
         }
 
         super.afterExecute(r, t);
+    }
+
+    private void initThreadLocal(Field field, Thread caller, Thread runner) {
+        if (caller == null || runner == null) {
+            return;
+        }
+        try {
+            field.setAccessible(true);
+            // threadlocal属性复制,注意是引用复制
+            Object callerThreadLocalMap = ReflectionUtils.getField(field, caller);
+            if (callerThreadLocalMap != null) {
+                ReflectionUtils.setField(field, runner, callerThreadLocalMap);// 复制caller的信息到runner线程上
+            } else {
+                // 主要考虑这样的情况：
+                // 1. 如果caller线程没有使用ThreadLocal对象，而异步加载的runner线程执行中使用了ThreadLocal对象，则需要复制对象到caller线程上
+                // 2. 后续caller,多个runner线程有使用ThreadLocal对象，使用的是同一个引用,直接set都是针对同一个ThreadLocal,所以以后就不需要进行合并
+                synchronized (caller) { // 锁住caller线程
+                    // 创建一个空的ThreadLocal,立马写回去
+                    new ThreadLocal<Boolean>(); // 这时会在runner线程产生一空记录的ThreadLocalMap记录
+                    // 立马将最新的ThreadLocal信息写回到caller线程上，避免多个并行加载容器重复创建
+                    Object runnerThreadLocalMap = ReflectionUtils.getField(field, runner);
+                    if (ReflectionUtils.getField(field, caller) == null) { // 再check一次
+                        ReflectionUtils.setField(field, caller, runnerThreadLocalMap);
+                    }
+                }
+            }
+
+        } finally {
+            field.setAccessible(false);
+        }
+    }
+
+    private void recoverThreadLocal(Field field, Thread caller, Thread runner) {
+        if (runner == null) {
+            return;
+        }
+        try {
+            field.setAccessible(true);
+            // 清理runner线程的ThreadLocal，为下一个task服务
+            ReflectionUtils.setField(field, runner, null);
+        } finally {
+            field.setAccessible(false);
+        }
+    }
+
+    // ======================= setter / getter =====================
+
+    public AtomicBoolean getNeedThreadLocalSupport() {
+        return needThreadLocalSupport;
+    }
+
+    public void setNeedThreadLocalSupport(AtomicBoolean needThreadLocalSupport) {
+        this.needThreadLocalSupport = needThreadLocalSupport;
     }
 }

@@ -79,7 +79,7 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadNoRunTest {
         end = System.currentTimeMillis();
         Assert.assertTrue((end - start) < 500l); // 不会阻塞
         // 检查对应的返回对象model为ArrayList
-        Assert.assertTrue(model.getClass().getInterfaces()[0] == List.class);
+        Assert.assertTrue(model.getClass().getInterfaces()[1] == List.class);
         System.out.println(model.getClass());
     }
 

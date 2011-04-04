@@ -3,12 +3,12 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.agapple.asyncload.util;
+package com.agapple.asyncload.helper;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.agapple.asyncload.impl.util.AsyncLoadReflectionHelper;
+import com.agapple.asyncload.impl.helper.AsyncLoadReflectionHelper;
 
 /**
  * @author jianghang 2011-3-31 下午02:34:00

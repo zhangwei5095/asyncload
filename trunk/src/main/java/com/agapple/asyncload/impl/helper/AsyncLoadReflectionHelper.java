@@ -3,21 +3,28 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.agapple.asyncload.impl.util;
+package com.agapple.asyncload.impl.helper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.cglib.core.ReflectUtils;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
 /**
+ * AyncLoad中常用的一些反射方法
+ * 
  * @author jianghang 2011-3-29 下午09:55:12
  */
 public class AsyncLoadReflectionHelper {
 
-    private static final Map primitiveValueMap = new HashMap(16);
+    private static final Map               primitiveValueMap = new HashMap(16);
+    private static Map<String, FastClass>  fastClassCache    = new ConcurrentHashMap<String, FastClass>();
+    private static Map<String, FastMethod> fastMethodCache   = new ConcurrentHashMap<String, FastMethod>();
 
     static {
         primitiveValueMap.put(Boolean.class, Boolean.FALSE);
@@ -70,6 +77,38 @@ public class AsyncLoadReflectionHelper {
         return ReflectUtils.newInstance(_constructor, _constructorArgs);
     }
 
+    public static FastMethod getMethod(Class<?> clazz, String methodName) {
+        return getMethod(clazz, methodName, new Class[] {});
+    }
+
+    /**
+     * 根据信息查询FastMethod，已经有cache实现。
+     * 
+     * @param clazz
+     * @param methodName
+     * @param parameterTypes
+     * @return
+     */
+    public static FastMethod getMethod(Class<?> clazz, String methodName, Class... parameterTypes) {
+        String clazzName = clazz.getName();
+        String methodKey = clazzName + "#" + methodName;
+
+        FastMethod method = fastMethodCache.get(methodKey);
+        if (null == method) {
+            FastClass fc = fastClassCache.get(clazzName);
+            if (null == fc) {
+                fc = FastClass.create(clazz);
+                fastClassCache.put(clazzName, fc);
+            }
+            method = fc.getMethod(methodName, parameterTypes);
+            if (null == method) {
+                fastMethodCache.put(methodKey, method);
+            }
+        }
+
+        return method;
+    }
+
     /**
      * 根据class类型返回默认值值
      * 
@@ -82,8 +121,8 @@ public class AsyncLoadReflectionHelper {
         } else if (cl.isPrimitive() || primitiveValueMap.containsKey(cl)) { // 处理原型
             return primitiveValueMap.get(cl);
         } else {
-            // return AsyncLoadReflectionHelper.newInstance(cl);
-            return null;
+            return AsyncLoadReflectionHelper.newInstance(cl);
+            // return null;
         }
     }
 }

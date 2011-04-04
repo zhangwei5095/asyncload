@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import junit.framework.Assert;
-import net.sf.cglib.core.DebuggingClassWriter;
 
 import org.junit.Test;
 
@@ -22,7 +21,6 @@ public class AsyncLoadFactoryBeanTest extends BaseAsyncLoadNoRunTest {
 
     @Test
     public void testFactoryBean() {
-        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
         AsyncLoadTestModel model1 = asyncLoadTestFactoryBean.getRemoteModel("first", 1000);
         AsyncLoadTestModel model2 = asyncLoadTestFactoryBean.getRemoteModel("two", 1000);
         long start = 0, end = 0;

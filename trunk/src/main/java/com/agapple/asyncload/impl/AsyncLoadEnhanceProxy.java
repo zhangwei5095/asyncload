@@ -21,7 +21,9 @@ import com.agapple.asyncload.AsyncLoadConfig;
 import com.agapple.asyncload.AsyncLoadExecutor;
 import com.agapple.asyncload.AsyncLoadMethodMatch;
 import com.agapple.asyncload.AsyncLoadProxy;
-import com.agapple.asyncload.impl.util.AsyncLoadReflectionHelper;
+import com.agapple.asyncload.impl.exceptions.AsyncLoadException;
+import com.agapple.asyncload.impl.helper.AsyncLoadProxyRepository;
+import com.agapple.asyncload.impl.helper.AsyncLoadReflectionHelper;
 
 /**
  * 基于cglib enhance proxy的实现
@@ -68,7 +70,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
         Assert.notNull(executor, "executor should not be null");
 
         if (Modifier.isFinal(targetClass.getModifiers())) { // 目前暂不支持final类型的处理，以后可以考虑使用jdk proxy
-            throw new IllegalArgumentException("Enhance proxy not support final class :" + service.getClass());
+            throw new AsyncLoadException("Enhance proxy not support final class :" + service.getClass());
         }
     }
 
@@ -76,17 +78,34 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
 
         public int accept(Method method) {
             // 预先进行匹配，直接计算好需要处理的method，避免动态匹配浪费性能
-            Map<AsyncLoadMethodMatch, Long> matches = config.getMatches();
-            Set<AsyncLoadMethodMatch> methodMatchs = matches.keySet();
-            if (methodMatchs != null && !methodMatchs.isEmpty()) {
-                for (Iterator<AsyncLoadMethodMatch> methodMatch = methodMatchs.iterator(); methodMatch.hasNext();) {
-                    if (methodMatch.next().matches(method)) {
-                        return 1;
+            if (AsyncLoadObject.class.isAssignableFrom(method.getDeclaringClass())) {// 判断对应的方法是否属于AsyncLoadObject
+                return 0; // for AsyncLoadServiceInterceptor
+            } else {
+                Map<AsyncLoadMethodMatch, Long> matches = config.getMatches();
+                Set<AsyncLoadMethodMatch> methodMatchs = matches.keySet();
+                if (methodMatchs != null && !methodMatchs.isEmpty()) {
+                    for (Iterator<AsyncLoadMethodMatch> methodMatch = methodMatchs.iterator(); methodMatch.hasNext();) {
+                        if (methodMatch.next().matches(method)) {
+                            return 2; // for AsyncLoadInterceptor
+                        }
                     }
                 }
+                return 1; // for AsyncLoadDirect
             }
+        }
+    }
 
-            return 0;
+    class AsyncLoadServiceInterceptor implements MethodInterceptor {
+
+        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            if ("_getOriginalClass".equals(method.getName())) {
+                return getOriginalClass();
+            }
+            throw new AsyncLoadException("method[" + method.getName() + "] is not support!");
+        }
+
+        private Object getOriginalClass() {
+            return targetClass;
         }
     }
 
@@ -123,7 +142,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
                         try {
                             return finMethod.invoke(finObj, finArgs);// 需要直接委托对应的finObj(service)进行处理
                         } catch (Throwable e) {
-                            throw new RuntimeException(e);
+                            throw new AsyncLoadException("future invoke error!", e);
                         }
                     }
                 });
@@ -165,7 +184,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
      * @return
      */
     private T getProxyInternal() {
-        Class proxyClass = AsyncLoadProxyRepository.getProxy(targetClass.getCanonicalName());
+        Class proxyClass = AsyncLoadProxyRepository.getProxy(targetClass.getName());
         if (proxyClass == null) {
             Enhancer enhancer = new Enhancer();
             if (targetClass.isInterface()) { // 判断是否为接口，优先进行接口代理可以解决service为final
@@ -173,15 +192,16 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
             } else {
                 enhancer.setSuperclass(targetClass);
             }
-            enhancer.setCallbackTypes(new Class[] { AsyncLoadDirect.class, AsyncLoadInterceptor.class });
+            enhancer.setCallbackTypes(new Class[] { AsyncLoadServiceInterceptor.class, AsyncLoadDirect.class,
+                    AsyncLoadInterceptor.class });
             enhancer.setCallbackFilter(new AsyncLoadCallbackFilter());
             proxyClass = enhancer.createClass();
             // 注册proxyClass
-            AsyncLoadProxyRepository.registerProxy(targetClass.getCanonicalName(), proxyClass);
+            AsyncLoadProxyRepository.registerProxy(targetClass.getName(), proxyClass);
         }
 
-        Enhancer.registerStaticCallbacks(proxyClass,
-                                         new Callback[] { new AsyncLoadDirect(), new AsyncLoadInterceptor() });
+        Enhancer.registerStaticCallbacks(proxyClass, new Callback[] { new AsyncLoadServiceInterceptor(),
+                new AsyncLoadDirect(), new AsyncLoadInterceptor() });
         try {
             return (T) AsyncLoadReflectionHelper.newInstance(proxyClass);
         } finally {

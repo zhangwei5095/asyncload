@@ -2,15 +2,15 @@
 
 = 项目简介 =
 借鉴ajax的理念，让我们biz层的代码也可以是一种异步+并行的模式进行处理，提升我们系统的单位时间内的吞吐量和tps。
-* 异步的方式直接返回对象，减少减少I/O等待的时间
-* 以多线程并行执行,提升系统的吞吐量，减少因异步后出现的等待时间。
+ * 异步的方式直接返回对象，减少减少I/O等待的时间
+ * 以多线程并行执行,提升系统的吞吐量，减少因异步后出现的等待时间。
 主要适用于：I/O密集型应用，低CPU
 
 = 工程包依赖 =
-* cglib 2.2
-* asm 3.1 
-* spring 2.5
-* slf4j and log4j 
+ * cglib 2.2
+ * asm 3.1 
+ * spring 2.5
+ * slf4j and log4j 
 
 = 主要功能介绍 =
 
@@ -57,8 +57,8 @@
 }}}
 
 说明：
-* 客户端直接依赖注入的对象asyncLoadTestFactoryBean进行使用
-* 可以配置对应的asyncLoadMethodMatch，定义自己关注的切入点。哪些方法需要或者不需做并行加载。
+ * 客户端直接依赖注入的对象asyncLoadTestFactoryBean进行使用
+ * 可以配置对应的asyncLoadMethodMatch，定义自己关注的切入点。哪些方法需要或者不需做并行加载。
 
 === 例子2(基于Spring的template模板模式使用) === 
 {{{
@@ -82,9 +82,9 @@ AsyncLoadTestModel model2 = asyncLoadTemplate.execute(new AsyncLoadCallback<Asyn
 }}}
 
 说明： 
-* 依赖了asyncLoadExecutor配置
-* 允许编程式的使用asyncload机制
-* 允许自定义异步加载的执行体AsyncLoadCallback。
+ * 依赖了asyncLoadExecutor配置
+ * 允许编程式的使用asyncload机制
+ * 允许自定义异步加载的执行体AsyncLoadCallback。
 
 === 例子3(基于Spring的advise模式使用) === 
 {{{
@@ -109,8 +109,8 @@ AsyncLoadTestModel model2 = asyncLoadTemplate.execute(new AsyncLoadCallback<Asyn
 </bean>
 }}}
 说明： 
-* 依赖asyncLoadTemplate配置
-* 结合BeanNameAutoProxyCreator可以无嵌入的修改当前的应用使其支持/不支持并行加载模式。
+ * 依赖asyncLoadTemplate配置
+ * 结合BeanNameAutoProxyCreator可以无嵌入的修改当前的应用使其支持/不支持并行加载模式。
 
 === 例子4(直接编程式) === 
 {{{

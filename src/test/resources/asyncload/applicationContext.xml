@@ -96,5 +96,21 @@
         	</list>
         </property>
      </bean>
+     <!-- 多次的代理会只作用于一个代理对象 -->
+     <bean class="com.agapple.asyncload.impl.spring.CompositeAutoProxyCreator">
+     	<property name="applyCommonInterceptorsFirst" value="true"/>
+        <property name="beanNames">
+        	<list>
+        		<value>asyncLoadTestServiceForCompsitePrototype</value>
+        		<value>asyncLoadTestServiceForCompsiteSingleton</value>
+        		<value>asyncLoadTestServiceForCompsiteFactoryBean</value>
+        	</list>
+        </property>
+        <property name="interceptorNames">
+        	<list>
+    			<value>logInteceptor</value>
+    		</list>
+        </property>
+     </bean>
      
 </beans>

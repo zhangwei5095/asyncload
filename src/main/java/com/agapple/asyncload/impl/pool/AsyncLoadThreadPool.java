@@ -70,6 +70,17 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
     }
 
     @Override
+    public void execute(Runnable command) {
+        if (command instanceof AsyncLoadFuture && needThreadLocalSupport.get()) {
+            // 创建一个空的ThreadLocal,立马写回去
+            new ThreadLocal<Boolean>(); // 这时会在runner线程产生一空记录的ThreadLocalMap记录
+            new InheritableThreadLocal<Boolean>(); // 可继承的ThreadLocal
+        }
+
+        super.execute(command);// 调用父类进行提交
+    }
+
+    @Override
     protected void beforeExecute(Thread t, Runnable r) {
         // 在执行之前处理下ThreadPool的属性继承
         if (r instanceof AsyncLoadFuture && needThreadLocalSupport.get()) {
@@ -97,29 +108,25 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
         if (caller == null || runner == null) {
             return;
         }
-        try {
-            field.setAccessible(true);
-            // threadlocal属性复制,注意是引用复制
-            Object callerThreadLocalMap = ReflectionUtils.getField(field, caller);
-            if (callerThreadLocalMap != null) {
-                ReflectionUtils.setField(field, runner, callerThreadLocalMap);// 复制caller的信息到runner线程上
-            } else {
-                // 主要考虑这样的情况：
-                // 1. 如果caller线程没有使用ThreadLocal对象，而异步加载的runner线程执行中使用了ThreadLocal对象，则需要复制对象到caller线程上
-                // 2. 后续caller,多个runner线程有使用ThreadLocal对象，使用的是同一个引用,直接set都是针对同一个ThreadLocal,所以以后就不需要进行合并
-                synchronized (caller) { // 锁住caller线程
-                    // 创建一个空的ThreadLocal,立马写回去
-                    new ThreadLocal<Boolean>(); // 这时会在runner线程产生一空记录的ThreadLocalMap记录
-                    // 立马将最新的ThreadLocal信息写回到caller线程上，避免多个并行加载容器重复创建
-                    Object runnerThreadLocalMap = ReflectionUtils.getField(field, runner);
-                    if (ReflectionUtils.getField(field, caller) == null) { // 再check一次
-                        ReflectionUtils.setField(field, caller, runnerThreadLocalMap);
-                    }
-                }
-            }
+        // 主要考虑这样的情况：
+        // 1. 如果caller线程没有使用ThreadLocal对象，而异步加载的runner线程执行中使用了ThreadLocal对象，则需要复制对象到caller线程上
+        // 2. 后续caller,多个runner线程有使用ThreadLocal对象，使用的是同一个引用,直接set都是针对同一个ThreadLocal,所以以后就不需要进行合并
 
-        } finally {
-            field.setAccessible(false);
+        // 因为在提交Runnable时已经同步创建了一个ThreadLocalMap对象，所以runner线程只需要复制caller对应的引用即可，不需要进行合并，简化处理
+        synchronized (caller) { // 锁住caller线程,避免两个并行加载单元出现竞争
+            try {
+                field.setAccessible(true);
+                // threadlocal属性复制,注意是引用复制
+                Object callerThreadLocalMap = ReflectionUtils.getField(field, caller);
+                if (callerThreadLocalMap != null) {
+                    ReflectionUtils.setField(field, runner, callerThreadLocalMap);// 复制caller的信息到runner线程上
+                } else {
+                    // 这个分支不会出现,因为在execute提交的时候已经添加
+                }
+
+            } finally {
+                field.setAccessible(false);
+            }
         }
     }
 
@@ -127,12 +134,14 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
         if (runner == null) {
             return;
         }
-        try {
-            field.setAccessible(true);
-            // 清理runner线程的ThreadLocal，为下一个task服务
-            ReflectionUtils.setField(field, runner, null);
-        } finally {
-            field.setAccessible(false);
+        synchronized (caller) { // 锁住caller线程,避免两个并行加载单元出现竞争
+            try {
+                field.setAccessible(true);
+                // 清理runner线程的ThreadLocal，为下一个task服务
+                ReflectionUtils.setField(field, runner, null);
+            } finally {
+                field.setAccessible(false);
+            }
         }
     }
 

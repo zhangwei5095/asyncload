@@ -42,7 +42,7 @@ public class AsyncLoadFuture<V> extends FutureTask<V> {
     @Override
     public void run() {
         startTime = System.currentTimeMillis();
-        runnerThread = Thread.currentThread(); // 记录的下具体pool中的runnerThread
+        runnerThread = Thread.currentThread(); // 记录的下具体pool中的runnerThread，可能是caller自己
         super.run();
     }
 

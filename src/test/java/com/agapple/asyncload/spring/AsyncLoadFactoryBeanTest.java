@@ -1,4 +1,4 @@
-package com.agapple.asyncload;
+package com.agapple.asyncload.spring;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.agapple.asyncload.BaseAsyncLoadNoRunTest;
 import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
 

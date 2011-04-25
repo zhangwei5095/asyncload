@@ -85,11 +85,17 @@ public class AsyncLoadTemplate {
         if (Void.TYPE.isAssignableFrom(returnClass)) {// 判断返回值是否为void
             // 不处理void的函数调用
             return callback.doAsyncLoad();
+        } else if (!Modifier.isPublic(returnClass.getModifiers())) {
+            // 处理如果是非public属性，则不进行代理，强制访问会出现IllegalAccessException，比如一些内部类或者匿名类不允许直接访问
+            return callback.doAsyncLoad();
         } else if (Modifier.isFinal(returnClass.getModifiers())) {
             // 处理特殊的final类型，目前暂不支持，后续可采用jdk proxy
             return callback.doAsyncLoad();
         } else if (returnClass.isPrimitive() || returnClass.isArray()) {
             // 不处理特殊类型，因为无法使用cglib代理
+            return callback.doAsyncLoad();
+        } else if (returnClass == Object.class) {
+            // 针对返回对象是Object类型，不做代理。没有具体的method，代理没任何意义
             return callback.doAsyncLoad();
         } else {
             Future<R> future = executor.submit(new Callable<R>() {

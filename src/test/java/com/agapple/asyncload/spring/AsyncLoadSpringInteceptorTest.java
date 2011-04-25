@@ -3,7 +3,7 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.agapple.asyncload;
+package com.agapple.asyncload.spring;
 
 import javax.annotation.Resource;
 
@@ -11,6 +11,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.agapple.asyncload.BaseAsyncLoadNoRunTest;
 import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
 

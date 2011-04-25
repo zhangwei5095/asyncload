@@ -1,10 +1,11 @@
-package com.agapple.asyncload;
+package com.agapple.asyncload.template;
 
 import javax.annotation.Resource;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.agapple.asyncload.BaseAsyncLoadNoRunTest;
 import com.agapple.asyncload.domain.AsyncLoadTestModel;
 import com.agapple.asyncload.domain.AsyncLoadTestService;
 import com.agapple.asyncload.impl.template.AsyncLoadCallback;

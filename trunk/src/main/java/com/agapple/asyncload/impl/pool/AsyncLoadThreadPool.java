@@ -113,7 +113,7 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
         // 2. 后续caller,多个runner线程有使用ThreadLocal对象，使用的是同一个引用,直接set都是针对同一个ThreadLocal,所以以后就不需要进行合并
 
         // 因为在提交Runnable时已经同步创建了一个ThreadLocalMap对象，所以runner线程只需要复制caller对应的引用即可，不需要进行合并，简化处理
-        synchronized (caller) { // 锁住caller线程,避免两个并行加载单元出现竞争
+        synchronized (Thread.class) { // 锁住caller线程,避免两个并行加载单元出现竞争
             try {
                 field.setAccessible(true);
                 // threadlocal属性复制,注意是引用复制
@@ -123,7 +123,6 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
                 } else {
                     // 这个分支不会出现,因为在execute提交的时候已经添加
                 }
-
             } finally {
                 field.setAccessible(false);
             }
@@ -134,7 +133,7 @@ public class AsyncLoadThreadPool extends ThreadPoolExecutor {
         if (runner == null) {
             return;
         }
-        synchronized (caller) { // 锁住caller线程,避免两个并行加载单元出现竞争
+        synchronized (Thread.class) { // 锁住caller线程,避免两个并行加载单元出现竞争
             try {
                 field.setAccessible(true);
                 // 清理runner线程的ThreadLocal，为下一个task服务

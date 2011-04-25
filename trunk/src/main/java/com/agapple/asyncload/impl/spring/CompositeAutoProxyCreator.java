@@ -54,7 +54,6 @@ public class CompositeAutoProxyCreator extends ProxyConfig implements BeanPostPr
     private int                order                        = Integer.MAX_VALUE;
     private String[]           interceptorNames             = new String[0];
     private boolean            applyCommonInterceptorsFirst = false;
-    private final Set          advisedBeans                 = Collections.synchronizedSet(new HashSet());
     private final Set          nonAdvisedBeans              = Collections.synchronizedSet(new HashSet());
 
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -79,13 +78,12 @@ public class CompositeAutoProxyCreator extends ProxyConfig implements BeanPostPr
             this.nonAdvisedBeans.add(cacheKey);
             return bean;
         }
-
+        // 不能进行代理cache，singleton的实现有spring core核心机制来保证，如果是singleton不会回调多次
         // Create proxy if we have advice.
         if (this.beanNames != null) {
             for (Iterator it = this.beanNames.iterator(); it.hasNext();) {
                 String mappedName = (String) it.next();
                 if (isMatch(beanName, mappedName)) {
-                    this.advisedBeans.add(cacheKey); // 添加到对应的adviserBean cache中，避免下次重复创建
                     if (ProxyFactoryBean.class.isAssignableFrom(bean.getClass())) {
                         ProxyFactoryBean proxyFactoryBean = (ProxyFactoryBean) bean;
                         String[] orignInterceptorNames = getInterceptorFromProxyFactoryBean(proxyFactoryBean);
@@ -106,6 +104,7 @@ public class CompositeAutoProxyCreator extends ProxyConfig implements BeanPostPr
                         proxyFactoryBean.setInterceptorNames(newInterceptorNames);
                         return proxyFactoryBean;
                     } else {
+                        // 如果是单例，对应的代理bean对象为同一个
                         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
                         proxyFactoryBean.setBeanFactory(beanFactory);
                         proxyFactoryBean.setBeanClassLoader(proxyClassLoader);

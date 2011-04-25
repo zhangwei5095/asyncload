@@ -101,9 +101,9 @@ public class AsyncLoadReturnClassTest extends BaseAsyncLoadNoRunTest {
         start = System.currentTimeMillis();
         Object model = proxy.getRemoteObject("first", 1000l);
         end = System.currentTimeMillis();
-        Assert.assertTrue((end - start) < 500l); // 不阻塞
+        Assert.assertTrue((end - start) > 500l); // 阻塞,Object对象不做代理
         System.out.println(model);
-        // 检查对应的返回对象model为ArrayList
+        // 检查对应的返回对象model为Object
         Assert.assertTrue(model.getClass().getSuperclass() == Object.class);
         System.out.println(model.getClass());
     }

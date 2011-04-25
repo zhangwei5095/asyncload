@@ -2,11 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans default-autowire="byName">
 	<bean id="asyncLoadTestServiceDAO" class="com.agapple.asyncload.domain.AsyncLoadTestServiceDAO" />
-	
 	<bean id="asyncLoadTestService" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" />
-	
-	<bean id="asyncLoadTestServiceForInteceptor" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" />
-	
 	<!-- async相关配置 -->
 	<bean id="asyncLoadExecutor" class="com.agapple.asyncload.AsyncLoadExecutor" init-method="initital" destroy-method="destory">
 		<property name="poolSize" value="10" />
@@ -50,6 +46,7 @@
 		<property name="defaultTimeout" value="3000" />
 	</bean>
 	<!--  并行加载拦截器 -->
+	<bean id="asyncLoadTestServiceForInteceptor" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" />
 	<bean id="asyncLoadInterceptor" class="com.agapple.asyncload.impl.spring.AsyncLoadInterceptor" >
 		<property name="asyncLoadTemplate" ref="asyncLoadTemplate" />
 	</bean>
@@ -68,25 +65,36 @@
         </property>
      </bean>
      
-     <!-- annotation属性处理 -->
-     <!--  
-     <bean id="asyncLoadInterceptor4CglibAnnotation" class="com.agapple.asyncload.impl.spring.AsyncLoadInterceptor4CglibAnnotation" >
-		<property name="asyncLoadTemplate" ref="asyncLoadTemplate" />
-	</bean>
-     <bean id="annotationService" class="com.agapple.asyncload.annotation.AnnotationService" />
-     <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
-   		<property name="optimize" value="false"/>
-   		<property name="proxyTargetClass" value="true" /> 
+     <!--  模式测试 -->
+     <!-- 多例测试 -->
+     <bean id="asyncLoadTestServiceForCompsitePrototype" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" scope="prototype" />
+     <!-- 单例测试 -->
+     <bean id="asyncLoadTestServiceForCompsiteSingleton" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" scope="singleton" />
+     <!-- 原本是ProxyFactoryBean -->
+     <bean id="logInteceptor" class="com.agapple.asyncload.spring.LogInteceptor" />
+     <bean id="asyncLoadTestServiceForCompsiteFactoryBean" class="org.springframework.aop.framework.ProxyFactoryBean" scope="prototype">
+    	<property name="interceptorNames">
+    		<list>
+    			<value>logInteceptor</value>
+    		</list>
+    	</property>
+    	<property name="targetName" value="asyncLoadTestService" />
+    	<property name="proxyTargetClass" value="true" /> <!-- 强制申明为cglib代理 -->
+     </bean>
+     
+     <bean class="com.agapple.asyncload.impl.spring.CompositeAutoProxyCreator">
         <property name="beanNames">
         	<list>
-        		<value>annotationService</value>
+        		<value>asyncLoadTestServiceForCompsitePrototype</value>
+        		<value>asyncLoadTestServiceForCompsiteSingleton</value>
+        		<value>asyncLoadTestServiceForCompsiteFactoryBean</value>
         	</list>
         </property>
         <property name="interceptorNames">
         	<list>
-	            <value>asyncLoadInterceptor4CglibAnnotation</value>
+	            <value>asyncLoadInterceptor</value>
         	</list>
         </property>
      </bean>
-      -->
+     
 </beans>

@@ -70,7 +70,12 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
         Assert.notNull(executor, "executor should not be null");
 
         if (Modifier.isFinal(targetClass.getModifiers())) { // 目前暂不支持final类型的处理，以后可以考虑使用jdk proxy
-            throw new AsyncLoadException("Enhance proxy not support final class :" + service.getClass());
+            throw new AsyncLoadException("Enhance proxy not support final class :" + targetClass.getName());
+        }
+
+        if (!Modifier.isPublic(targetClass.getModifiers())) {
+            // 处理如果是非public属性，则不进行代理，强制访问会出现IllegalAccessException，比如一些内部类或者匿名类不允许直接访问
+            throw new AsyncLoadException("Enhance proxy not support private/protected class :" + targetClass.getName());
         }
     }
 
@@ -129,11 +134,17 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
             if (Void.TYPE.isAssignableFrom(returnClass)) {// 判断返回值是否为void
                 // 不处理void的函数调用
                 return finMethod.invoke(finObj, finArgs);
+            } else if (!Modifier.isPublic(returnClass.getModifiers())) {
+                // 处理如果是非public属性，则不进行代理，强制访问会出现IllegalAccessException，比如一些内部类或者匿名类不允许直接访问
+                return finMethod.invoke(finObj, finArgs);
             } else if (Modifier.isFinal(returnClass.getModifiers())) {
                 // 处理特殊的final类型，目前暂不支持，后续可采用jdk proxy
                 return finMethod.invoke(finObj, finArgs);
             } else if (returnClass.isPrimitive() || returnClass.isArray()) {
                 // 不处理特殊类型，因为无法使用cglib代理
+                return finMethod.invoke(finObj, finArgs);
+            } else if (returnClass == Object.class) {
+                // 针对返回对象是Object类型，不做代理。没有具体的method，代理没任何意义
                 return finMethod.invoke(finObj, finArgs);
             } else {
                 Future future = executor.submit(new Callable() {
@@ -200,7 +211,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
             AsyncLoadProxyRepository.registerProxy(targetClass.getName(), proxyClass);
         }
 
-        Enhancer.registerStaticCallbacks(proxyClass, new Callback[] { new AsyncLoadServiceInterceptor(),
+        Enhancer.registerCallbacks(proxyClass, new Callback[] { new AsyncLoadServiceInterceptor(),
                 new AsyncLoadDirect(), new AsyncLoadInterceptor() });
         try {
             return (T) AsyncLoadReflectionHelper.newInstance(proxyClass);

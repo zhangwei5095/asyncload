@@ -42,7 +42,7 @@ public class AsyncLoadResult {
             if (returnClass.isInterface()) {// 判断returnClass是否为接口
                 enhancer.setInterfaces(new Class[] { AsyncLoadObject.class, returnClass }); // 设置默认的接口
             } else {
-                enhancer.setInterfaces(new Class[] { AsyncLoadObject.class, });// 设置默认的接口
+                enhancer.setInterfaces(new Class[] { AsyncLoadObject.class });// 设置默认的接口
                 enhancer.setSuperclass(returnClass);
             }
             enhancer.setCallbackFilter(new AsyncLoadCallbackFilter());
@@ -52,7 +52,7 @@ public class AsyncLoadResult {
             AsyncLoadProxyRepository.registerProxy(returnClass.getName(), proxyClass);
         }
 
-        Enhancer.registerStaticCallbacks(proxyClass, new Callback[] { new AsyncLoadResultInterceptor(),
+        Enhancer.registerCallbacks(proxyClass, new Callback[] { new AsyncLoadResultInterceptor(),
                 new AsyncLoadObjectInterceptor() });
         try {
             // 返回对象
@@ -108,7 +108,6 @@ public class AsyncLoadResult {
      */
     class AsyncLoadObjectInterceptor implements MethodInterceptor {
 
-        @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
             if ("_isNull".equals(method.getName())) {
                 return isNull();

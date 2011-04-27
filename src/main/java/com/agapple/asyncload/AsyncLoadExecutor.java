@@ -2,13 +2,12 @@ package com.agapple.asyncload;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.agapple.asyncload.impl.pool.AsyncLoadCallable;
+import com.agapple.asyncload.impl.pool.AsyncLoadFuture;
 import com.agapple.asyncload.impl.pool.AsyncLoadThreadPool;
 import com.agapple.asyncload.impl.pool.NamedThreadFactory;
 
@@ -19,15 +18,14 @@ import com.agapple.asyncload.impl.pool.NamedThreadFactory;
  */
 public class AsyncLoadExecutor {
 
-    public static final int        DEFAULT_POOL_SIZE      = 20;
-    public static final int        DEFAULT_ACCEPT_COUNT   = 100;
-    public static final HandleMode DEFAULT_MODE           = HandleMode.REJECT;
+    public static final int        DEFAULT_POOL_SIZE    = 20;
+    public static final int        DEFAULT_ACCEPT_COUNT = 100;
+    public static final HandleMode DEFAULT_MODE         = HandleMode.REJECT;
     private int                    poolSize;
-    private int                    acceptCount;                               // 等待队列长度，避免无限制提交请求
-    private HandleMode             mode;                                      // 默认为拒绝服务，用于控制accept队列满了以后的处理方式
+    private int                    acceptCount;                             // 等待队列长度，避免无限制提交请求
+    private HandleMode             mode;                                    // 默认为拒绝服务，用于控制accept队列满了以后的处理方式
     private AsyncLoadThreadPool    pool;
-    private volatile boolean       isInit                 = false;
-    private boolean                needThreadLocalSupport = false;
+    private volatile boolean       isInit               = false;
 
     enum HandleMode {
         REJECT, CALLERRUN;
@@ -58,7 +56,6 @@ public class AsyncLoadExecutor {
             // 构造pool池
             this.pool = new AsyncLoadThreadPool(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, queue,
                                                 new NamedThreadFactory(), handler);
-            this.pool.setNeedThreadLocalSupport(new AtomicBoolean(needThreadLocalSupport));
 
             isInit = true;
         }
@@ -73,11 +70,7 @@ public class AsyncLoadExecutor {
         }
     }
 
-    public <T> Future<T> submit(Callable<T> task) {
-        return pool.submit(task);
-    }
-
-    public Future<?> submit(Runnable task) {
+    public <T> AsyncLoadFuture<T> submit(AsyncLoadCallable<T> task) {
         return pool.submit(task);
     }
 
@@ -113,10 +106,6 @@ public class AsyncLoadExecutor {
 
     public void setMode(String mode) {
         this.mode = HandleMode.valueOf(mode);
-    }
-
-    public void setNeedThreadLocalSupport(boolean needThreadLocalSupport) {
-        this.needThreadLocalSupport = needThreadLocalSupport;
     }
 
     // ======================= help method ==========================

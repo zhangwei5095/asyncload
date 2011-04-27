@@ -1,12 +1,10 @@
-/*
- * Copyright 1999-2004 Alibaba.com All right reserved. This software is the confidential and proprietary information of
- * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
- * in accordance with the terms of the license agreement you entered into with Alibaba.com.
- */
 package com.agapple.asyncload.impl.pool;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+
+import org.springframework.util.Assert;
+
+import com.agapple.asyncload.AsyncLoadConfig;
 
 /**
  * 继承J.U.C下的FutureTask,主要的变化点：
@@ -19,19 +17,18 @@ import java.util.concurrent.FutureTask;
  */
 public class AsyncLoadFuture<V> extends FutureTask<V> {
 
-    private Thread callerThread; // 记录提交runnable的thread，在ThreadPool中用于提取ThreadLocal
-    private Thread runnerThread;
-    private long   startTime = 0; // 记录下future开始执行的时间
-    private long   endTime   = 0; // 记录下future执行结束时间
+    private Thread          callerThread; // 记录提交runnable的thread，在ThreadPool中用于提取ThreadLocal
+    private Thread          runnerThread;
+    private long            startTime = 0; // 记录下future开始执行的时间
+    private long            endTime   = 0; // 记录下future执行结束时间
+    private AsyncLoadConfig config;
 
-    public AsyncLoadFuture(Callable<V> callable){
+    public AsyncLoadFuture(AsyncLoadCallable<V> callable){
         super(callable);
         callerThread = Thread.currentThread();
-    }
+        config = callable.getConfig();
 
-    public AsyncLoadFuture(Runnable runnable, V result){
-        super(runnable, result);
-        callerThread = Thread.currentThread();
+        Assert.notNull(config, "config is null!");
     }
 
     @Override
@@ -62,6 +59,10 @@ public class AsyncLoadFuture<V> extends FutureTask<V> {
 
     public long getEndTime() {
         return endTime;
+    }
+
+    public AsyncLoadConfig getConfig() {
+        return config;
     }
 
 }

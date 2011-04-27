@@ -71,7 +71,7 @@ public class AsyncLoadResult {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    private Object loadFuture() throws InterruptedException, ExecutionException {
+    private Object loadFuture() throws AsyncLoadException {
         try {
             // 使用cglib lazyLoader，避免每次调用future
             if (timeout <= 0) {// <=0处理，不进行超时控制
@@ -81,6 +81,8 @@ public class AsyncLoadResult {
             }
         } catch (TimeoutException e) {
             future.cancel(true);
+            throw new AsyncLoadException(e);
+        } catch (InterruptedException e) {
             throw new AsyncLoadException(e);
         } catch (Exception e) {
             throw new AsyncLoadException(e);
@@ -115,18 +117,21 @@ public class AsyncLoadResult {
                 return getStatus();
             } else if ("_getOriginalClass".equals(method.getName())) {
                 return getOriginalClass();
+            } else if ("_getOriginalResult".equals(method.getName())) {
+                return getOriginalResut();
             }
 
             throw new AsyncLoadException("method[" + method.getName() + "] is not support!");
         }
 
-        private Object isNull() {
+        private Object isNull() throws Throwable {
             try {
                 return loadFuture() == null; // 判断原始对象是否为null
             } catch (Exception e) {
                 // 如果出现异常，直接返回为true，这里不再抛出异常，没意义，因为我这里想要的是isNull判断
                 // 在最后get()属性时会返回对应future执行的异常信息
-                return true;
+                // return true;
+                throw e;
             }
         }
 
@@ -156,6 +161,10 @@ public class AsyncLoadResult {
 
         private Object getOriginalClass() {
             return returnClass;
+        }
+
+        private Object getOriginalResut() throws Throwable {
+            return loadFuture();
         }
 
     }

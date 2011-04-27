@@ -3,7 +3,6 @@ package com.agapple.asyncload;
 import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.Assert;
-import net.sf.cglib.core.DebuggingClassWriter;
 
 import org.junit.Before;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,7 +15,7 @@ public class BaseAsyncLoadNoRunTest extends AbstractJUnit38SpringContextTests {
 
     @Before
     public void setUp() {
-        System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
+        // System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, "/tmp/cglib/");
         // 清空repository内的cache记录
         try {
             TestUtils.setField(new AsyncLoadProxyRepository(), "reponsitory", new ConcurrentHashMap<String, Class>());

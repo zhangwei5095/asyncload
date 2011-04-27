@@ -1,8 +1,3 @@
-/*
- * Copyright 1999-2004 Alibaba.com All right reserved. This software is the confidential and proprietary information of
- * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
- * in accordance with the terms of the license agreement you entered into with Alibaba.com.
- */
 package com.agapple.asyncload.util;
 
 import java.util.ArrayList;
@@ -104,6 +99,30 @@ public class AsyncLoadUtilsTest extends BaseAsyncLoadNoRunTest {
     }
 
     @Test
+    public void testGetOriginalResult() {
+        // 初始化config
+        AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
+        // 初始化executor
+        AsyncLoadExecutor executor = new AsyncLoadExecutor(10, 100);
+        executor.initital();
+        // 初始化proxy
+        AsyncLoadEnhanceProxy<AsyncLoadTestService> proxy = new AsyncLoadEnhanceProxy<AsyncLoadTestService>();
+        proxy.setService(asyncLoadTestService);
+        proxy.setConfig(config);
+        proxy.setExecutor(executor);
+        AsyncLoadTestService service = proxy.getProxy();
+
+        AsyncLoadTestModel model = service.getRemoteModel("one", 1000); // 方法直接返回了null
+        List<AsyncLoadTestModel> models = service.listRemoteModel("one", 1000); // 调用list方法，设置返回了为一个空数组
+
+        long start = System.currentTimeMillis();
+        Assert.assertEquals(AsyncLoadUtils.getOriginalResult(model).getClass(), AsyncLoadTestModel.class);// 是个具体子类
+        Assert.assertEquals(AsyncLoadUtils.getOriginalResult(models).getClass(), ArrayList.class);// 真实返回的是个ArrayList
+        long end = System.currentTimeMillis();
+        Assert.assertTrue(end - start > 500);// 调用这个方法会进行阻塞
+    }
+
+    @Test
     public void testGetStatus_Done() {
         // 初始化config
         AsyncLoadConfig config = new AsyncLoadConfig(3 * 1000l);
@@ -145,7 +164,12 @@ public class AsyncLoadUtilsTest extends BaseAsyncLoadNoRunTest {
             model = service.getRemoteModel("one", 4000);
         } catch (AsyncLoadException e) {
         }
-        Assert.assertTrue(AsyncLoadUtils.isNull(model));// 因为超时了，所以isNull判读为true
+        try {
+            AsyncLoadUtils.isNull(model);
+            Assert.fail();
+        } catch (Exception e) {
+            // 因为超时了，所以会出现Timeout异常
+        }
         AsyncLoadStatus status = AsyncLoadUtils.getStatus(model); // 获取对应的status
         Assert.assertTrue(status.getStatus().isTimeout());
         Assert.assertTrue(status.getCostTime() > 2500 && status.getCostTime() < 3500);

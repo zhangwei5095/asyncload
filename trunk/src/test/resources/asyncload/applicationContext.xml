@@ -8,7 +8,6 @@
 		<property name="poolSize" value="10" />
 		<property name="acceptCount" value="100" />
 		<property name="mode" value="REJECT" />
-		<property name="needThreadLocalSupport" value="true" />
 	</bean>
 	<bean id="asyncLoadMethodMatch" class="com.agapple.asyncload.impl.AsyncLoadPerl5RegexpMethodMatcher" >
 		<property name="patterns">
@@ -25,6 +24,8 @@
 	</bean>
 	<bean id="asyncLoadConfig" class="com.agapple.asyncload.AsyncLoadConfig">
 		<property name="defaultTimeout" value="3000" />
+		<property name="needThreadLocalSupport" value="true" />
+		<property name="needBarrierSupport" value="false" />
 		<property name="matches">
 			<map>
 				<entry key-ref="asyncLoadMethodMatch" value="2000" />
@@ -43,7 +44,7 @@
 	<!-- 异步加载模板类 -->
 	<bean id="asyncLoadTemplate" class="com.agapple.asyncload.impl.template.AsyncLoadTemplate" >
 		<property name="executor" ref="asyncLoadExecutor" />
-		<property name="defaultTimeout" value="3000" />
+		<property name="config" ref="asyncLoadConfig" />
 	</bean>
 	<!--  并行加载拦截器 -->
 	<bean id="asyncLoadTestServiceForInteceptor" class="com.agapple.asyncload.domain.AsyncLoadTestServiceImpl" />

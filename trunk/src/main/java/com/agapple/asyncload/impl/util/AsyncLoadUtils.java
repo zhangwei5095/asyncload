@@ -1,8 +1,3 @@
-/*
- * Copyright 1999-2004 Alibaba.com All right reserved. This software is the confidential and proprietary information of
- * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
- * in accordance with the terms of the license agreement you entered into with Alibaba.com.
- */
 package com.agapple.asyncload.impl.util;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -10,6 +5,7 @@ import net.sf.cglib.proxy.Enhancer;
 import com.agapple.asyncload.impl.AsyncLoadObject;
 import com.agapple.asyncload.impl.AsyncLoadService;
 import com.agapple.asyncload.impl.AsyncLoadStatus;
+import com.agapple.asyncload.impl.exceptions.AsyncLoadException;
 
 /**
  * 提供给外部的一些AsyncLoad的便利的操作方法
@@ -24,7 +20,7 @@ public class AsyncLoadUtils {
      * @param model
      * @return
      */
-    public static boolean isAsyncLoad(Object model) {
+    public static boolean isAsyncLoad(Object model) throws AsyncLoadException {
         if (model == null) {
             return false;
         }
@@ -38,7 +34,7 @@ public class AsyncLoadUtils {
      * @param model
      * @return
      */
-    public static boolean isAsyncLoad(Class clazz) {
+    public static boolean isAsyncLoad(Class clazz) throws AsyncLoadException {
         if (clazz == null) {
             return false;
         }
@@ -53,13 +49,13 @@ public class AsyncLoadUtils {
      * 说明: 
      * 1. 如果当前model没有采用并行加载,则直接返回model == null判断，兼容处理
      * 2. 加载model过程中出现异常，该方法直接返回true。对应的异常：并行加载超时异常，service抛出业务异常等
-     * 3. 调用该方法会阻塞并行加载，直到结果返回
+     * 3. 调用该方法会进行阻塞并行加载，直到结果返回
      * </pre>
      * 
      * @param model
      * @return
      */
-    public static boolean isNull(Object model) {
+    public static boolean isNull(Object model) throws AsyncLoadException {
         if (!isAsyncLoad(model)) {// 如果不是并行加载model
             // throw new IllegalArgumentException("model is not run asyncload mode!");
             return model == null;
@@ -80,7 +76,7 @@ public class AsyncLoadUtils {
      * @param model
      * @return
      */
-    public static AsyncLoadStatus getStatus(Object model) {
+    public static AsyncLoadStatus getStatus(Object model) throws AsyncLoadException {
         if (!isAsyncLoad(model)) {// 如果不是并行加载model
             // throw new IllegalArgumentException("model is not run asyncload mode!");
             return null;
@@ -101,12 +97,33 @@ public class AsyncLoadUtils {
      * @param model
      * @return
      */
-    public static Class<?> getOriginalClass(Object model) {
+    public static Class<?> getOriginalClass(Object model) throws AsyncLoadException {
         if (!isAsyncLoad(model)) {// 如果不是并行加载model
             // throw new IllegalArgumentException("model is not run asyncload mode!");
             return model.getClass();
         } else {
             return ((AsyncLoadObject) model)._getOriginalClass(); // 进行强制转型处理
+        }
+    }
+
+    /**
+     * 执行并行加载后，原先的Model对象已经被代理，这里提供一个util方法获取原始的方法调用的返回对象
+     * 
+     * <pre>
+     * 说明: 
+     * 1. 如果当前model没有采用并行加载,则直接返回model本身
+     * 2. 调用该方法会进行阻塞并行加载
+     * </pre>
+     * 
+     * @param model
+     * @return
+     */
+    public static Object getOriginalResult(Object model) throws AsyncLoadException {
+        if (!isAsyncLoad(model)) {// 如果不是并行加载model
+            // throw new IllegalArgumentException("model is not run asyncload mode!");
+            return model;
+        } else {
+            return ((AsyncLoadObject) model)._getOriginalResult(); // 进行强制转型处理
         }
     }
 
@@ -122,7 +139,7 @@ public class AsyncLoadUtils {
      * @param service代理之前的class，可能是个接口或者具体类
      * @return
      */
-    public static Class<?> getServiceOriginalClass(Object service) {
+    public static Class<?> getServiceOriginalClass(Object service) throws AsyncLoadException {
         Class clazz = service.getClass();
         if (Enhancer.isEnhanced(clazz) && AsyncLoadService.class.isAssignableFrom(clazz)) {// 如果不是并行加载model
             // throw new IllegalArgumentException("service is not run asyncload mode!");

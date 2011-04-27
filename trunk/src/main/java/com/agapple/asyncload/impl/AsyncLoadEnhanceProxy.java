@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import net.sf.cglib.proxy.Callback;
@@ -24,6 +23,8 @@ import com.agapple.asyncload.AsyncLoadProxy;
 import com.agapple.asyncload.impl.exceptions.AsyncLoadException;
 import com.agapple.asyncload.impl.helper.AsyncLoadProxyRepository;
 import com.agapple.asyncload.impl.helper.AsyncLoadReflectionHelper;
+import com.agapple.asyncload.impl.pool.AsyncLoadCallable;
+import com.agapple.asyncload.impl.util.AsyncLoadBarrier;
 
 /**
  * 基于cglib enhance proxy的实现
@@ -147,7 +148,7 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
                 // 针对返回对象是Object类型，不做代理。没有具体的method，代理没任何意义
                 return finMethod.invoke(finObj, finArgs);
             } else {
-                Future future = executor.submit(new Callable() {
+                Future future = executor.submit(new AsyncLoadCallable() {
 
                     public Object call() throws Exception {
                         try {
@@ -156,11 +157,21 @@ public class AsyncLoadEnhanceProxy<T> implements AsyncLoadProxy<T> {
                             throw new AsyncLoadException("future invoke error!", e);
                         }
                     }
+
+                    public AsyncLoadConfig getConfig() {
+                        return config;
+                    }
                 });
                 // 够造一个返回的AsyncLoadResult
                 AsyncLoadResult result = new AsyncLoadResult(returnClass, future, timeout);
                 // 继续返回一个代理对象
-                return result.getProxy();
+                AsyncLoadObject asyncProxy = (AsyncLoadObject) result.getProxy();
+                // 添加到barrier中
+                if (config.getNeedBarrierSupport()) {
+                    AsyncLoadBarrier.addTask((AsyncLoadObject) asyncProxy);
+                }
+                // 返回对象
+                return asyncProxy;
             }
 
         }
